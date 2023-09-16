@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Meeting = require("../models/Meeting");
 const { uploadFile } = require("./fileController"); // Import the uploadPicture function
 
 exports.register = async (req, res) => {

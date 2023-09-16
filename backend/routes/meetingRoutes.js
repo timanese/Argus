@@ -4,7 +4,10 @@ const meetingController = require("../controllers/meetingController");
 
 router.post("/:meetingId/uploadGPS", meetingController.uploadGPS);
 
-router.post("/:meetingId/uploadAudioBlob", meetingController.uploadAudioBlob);
+router.post("/:meetingId/uploadAudioBlob", meetingController.uploadAudio);
+
+// Get all meetings
+router.get("/:id/getAll", meetingController.getAllMeetings);
 
 // Request an exchange
 router.post("/request", meetingController.request);

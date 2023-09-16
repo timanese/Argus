@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const MeetingSchema = new mongoose.Schema({
   uniqueId: { type: String, required: true },
+  meetingTitle: { type: String, required: true },
   level: { type: String, enum: ["1", "2"], required: true },
   initiatedBy: {
     type: mongoose.Schema.Types.ObjectId,

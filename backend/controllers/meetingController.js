@@ -3,36 +3,66 @@ const Meeting = require("../models/Meeting");
 const User = require("../models/User");
 const twilioClient = require("../config/twilio");
 
-exports.uploadGPS = async (req, res) => {
+// General-purpose function to upload GPS data
+const uploadGPSData = async (meetingId, gpsLog) => {
   try {
-    const { meetingId } = req.params;
-    const { gpsLog } = req.body;
     const meeting = await Meeting.findById(meetingId);
-    if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
+    if (!meeting) {
+      console.error("Meeting not found");
+      return;
+    }
 
     // Add the GPS log to the gpsLogs array
     meeting.gpsLogs.push(gpsLog);
 
     await meeting.save();
-    res.status(200).json({ msg: "GPS log added successfully", meeting });
+    console.log("GPS log added successfully");
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// Express middleware to handle HTTP request
+exports.uploadGPS = async (req, res) => {
+  const { meetingId } = req.params;
+  const { gpsLog } = req.body;
+
+  try {
+    await uploadGPSData(meetingId, gpsLog);
+    res.status(200).json({ msg: "GPS log added successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 };
 
-exports.uploadAudioBlob = async (req, res) => {
+// General-purpose function to upload audio data
+const uploadAudioData = async (meetingId, fileId) => {
+  try {
+    const meeting = await Meeting.findById(meetingId);
+    if (!meeting) {
+      console.error("Meeting not found");
+      return;
+    }
+
+    // Add the audio file ID to the audioLogs array
+    meeting.audioLogs.push(fileId);
+
+    await meeting.save();
+    console.log("Audio successfully added");
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// Express middleware to handle HTTP request
+exports.uploadAudio = async (req, res) => {
   const { meetingId } = req.params;
   const fileId = req.body.fileId;
 
   try {
-    const meeting = await Meeting.findById(meetingId);
-    if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
-
-    meeting.audioLogs.push(fileId);
-    await meeting.save();
-
-    res.status(200).json({ msg: "Audio successfully added", meeting });
+    await uploadAudioData(meetingId, fileId);
+    res.status(200).json({ msg: "Audio successfully added" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -67,40 +97,6 @@ exports.request = async (req, res) => {
     res
       .status(201)
       .json({ msg: "Meeting requested successfully", meeting, shareableUrl });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-};
-
-exports.share = async (req, res) => {
-  const { uniqueId } = req.params;
-
-  try {
-    // Find the meeting by its unique ID
-    let meeting = await Meeting.findOne({ uniqueId });
-
-    // Check if the meeting exists
-    if (!meeting) {
-      return res.status(404).json({ msg: "Meeting not found" });
-    }
-
-    // Logic for checking user's login status and redirecting appropriately
-    if (req.user) {
-      // If the middleware sets req.user, the user is authenticated
-      // User is logged in, redirect them to the pending meeting details page
-      const redirectUrl = `/meetings/pending/${uniqueId}`;
-      return res
-        .status(200)
-        .json({ msg: "User is logged in, redirecting", redirectUrl });
-    } else {
-      // User is not logged in, redirect them to the login page with a `redirect_uri` parameter
-      const redirectUrl = `/login?redirect_uri=/meetings/pending/${uniqueId}`;
-      return res.status(200).json({
-        msg: "User is not logged in, redirecting to login",
-        redirectUrl,
-      });
-    }
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

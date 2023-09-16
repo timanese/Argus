@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const { uploadFile } = require("./pictureController"); // Import the uploadPicture function
+const { uploadFile } = require("./fileController"); // Import the uploadPicture function
 
 exports.register = async (req, res) => {
   const {
@@ -30,9 +30,9 @@ exports.register = async (req, res) => {
       phoneNumber,
       password,
       emergencyContacts: emergencyContacts ?? [],
-      //   profilePicture: mongoose.Types.ObjectId(profilePicture),
-      //   driversLicenseFront: mongoose.Types.ObjectId(driversLicenseFront),
-      //   driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
+      profilePictureId,
+      driversLicenseFrontId,
+      driversLicenseBackId,
     });
 
     if (!password) {
@@ -46,21 +46,9 @@ exports.register = async (req, res) => {
     // Save the user in the database
     await user.save();
 
-    // Sign the token
-    const payload = {
-      id: user.id,
-      username: user.username,
-    };
+    let { pass, ...rest } = user._doc;
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token, id: user.id, username: user.username });
-      }
-    );
+    res.json(rest);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -83,21 +71,9 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Sign the token
-    const payload = {
-      id: user.id,
-      username: user.username,
-    };
+    const { pass, ...rest } = user._doc;
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token, id: user.id, username: user.username });
-      }
-    );
+    res.json(rest);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

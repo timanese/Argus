@@ -17,6 +17,7 @@ function RequireAuth({ children }) {
   let auth = useAuth();
   if (!auth.user) {
     console.log("Not logged in, redirecting.");
+    // uncomment if needed
     return <Navigate to={LOGIN_ROUTE} />;
   }
 

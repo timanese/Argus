@@ -13,7 +13,6 @@ export function useAuth() {
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const __testing = process.env.__TESTING_MODE;
 
   async function logout() {
     const logoutPromise = new Promise(async (resolve, reject) => {
@@ -85,12 +84,11 @@ export function UserProvider({ children }) {
     user,
     login,
     logout,
-    setUser,
-    __testing,
+    setUser
   };
   return (
     <UserContext.Provider value={values}>
-      {(!loading || values.__testing) && children}
+      {!loading && children}
     </UserContext.Provider>
   );
 }

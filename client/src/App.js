@@ -6,7 +6,7 @@ import HomePage from "./pages/homePage";
 import ProfilePage from "./pages/ProfilePage";
 
 // Fix this when implemented:
-import LoginPage from "./pages/loginPage";
+// import LoginPage from "./pages/loginPage";
 
 const LOGIN_ROUTE = "/login";
 
@@ -43,7 +43,7 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route path={LOGIN_ROUTE} element={<LoginPage />} />
+          {/* <Route path={LOGIN_ROUTE} element={<LoginPage />} /> */}
         </Routes>
       </UserProvider>
     </BrowserRouter>

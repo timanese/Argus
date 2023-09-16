@@ -10,6 +10,7 @@ exports.register = async (req, res) => {
     email,
     phoneNumber,
     password,
+    emergencyContacts,
     profilePictureId,
     driversLicenseFrontId,
     driversLicenseBackId,
@@ -28,7 +29,7 @@ exports.register = async (req, res) => {
       email,
       phoneNumber,
       password,
-      emergencyContacts,
+      emergencyContacts: emergencyContacts ?? [],
       //   profilePicture: mongoose.Types.ObjectId(profilePicture),
       //   driversLicenseFront: mongoose.Types.ObjectId(driversLicenseFront),
       //   driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
@@ -45,7 +46,21 @@ exports.register = async (req, res) => {
     // Save the user in the database
     await user.save();
 
-    res.status(201).json({ msg: "User registered successfully" });
+    // Sign the token
+    const payload = {
+      id: user.id,
+      username: user.username,
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: 3600 },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token, id: user.id, username: user.username });
+      }
+    );
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

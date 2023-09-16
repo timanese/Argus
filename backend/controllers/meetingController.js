@@ -2,7 +2,6 @@ const crypto = require("crypto");
 const Meeting = require("../models/Meeting");
 const User = require("../models/User");
 const twilioClient = require("../config/twilio");
-const s3 = require("../config/s3");
 
 exports.uploadGPS = async (req, res) => {
   try {

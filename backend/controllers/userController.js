@@ -26,12 +26,11 @@ exports.register = async (req, res) => {
     user = new User({
       username,
       email,
-      phoneNumber,s
+      phoneNumber,
       password,
-      emergencyContacts,
-      //   profilePicture: mongoose.Types.ObjectId(profilePicture),
-      //   driversLicenseFront: mongoose.Types.ObjectId(driversLicenseFront),
-      //   driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
+      profilePictureId,
+      driversLicenseFrontId,
+      driversLicenseBackId,
     });
 
     if (!password) {

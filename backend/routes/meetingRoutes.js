@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const meetingController = require( "../controllers/meetingController" );
+const meetingController = require("../controllers/meetingController");
 
 router.post("/:meetingId/uploadGPS", meetingController.uploadGPS);
 
 router.post("/:meetingId/uploadAudio", meetingController.uploadAudio);
+
+// Get all meetings
+router.get("/:id/getAll", meetingController.getAllMeetings);
 
 // Request an exchange
 router.post("/request", meetingController.request);

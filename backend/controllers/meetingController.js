@@ -69,6 +69,28 @@ exports.uploadAudio = async (req, res) => {
   }
 };
 
+exports.getAllMeetings = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const meetings = await Meeting.find({
+      $or: [
+        { initiatedBy: id },
+        { acceptedBy: id }
+      ]
+    }).populate('initiatedBy').populate('acceptedBy'); // Optional: populate to get more user details
+
+    if (!meetings || meetings.length === 0) {
+      return res.status(404).json({ msg: 'No meetings found for this user' });
+    }
+
+    res.status(200).json({ meetings });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
 exports.request = async (req, res) => {
   const { level, initiatedBy, location, startTime } = req.body;
 

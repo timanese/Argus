@@ -46,21 +46,9 @@ exports.register = async (req, res) => {
     // Save the user in the database
     await user.save();
 
-    // Sign the token
-    const payload = {
-      id: user.id,
-      username: user.username,
-    };
+    const { password, ...rest } = user;
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token, id: user.id, username: user.username });
-      }
-    );
+    res.json(rest);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -83,21 +71,9 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Sign the token
-    const payload = {
-      id: user.id,
-      username: user.username,
-    };
+    const { pass, ...rest } = user;
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token, id: user.id, username: user.username });
-      }
-    );
+    res.json(rest);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

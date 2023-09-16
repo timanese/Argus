@@ -24,35 +24,16 @@ exports.uploadGPS = async (req, res) => {
 
 exports.uploadAudioBlob = async (req, res) => {
   const { meetingId } = req.params;
-  const audioBlob = req.body.audioBlob;
+  const fileId = req.body.fileId;
 
   try {
     const meeting = await Meeting.findById(meetingId);
     if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
 
-    const audioBuffer = Buffer.from(audioBlob, "base64");
-    const fileName = `${meetingId}-${Date.now()}.aac`;
+    meeting.audioLogs.push(fileId);
+    await meeting.save();
 
-    const params = {
-      Bucket: "your-bucket-name",
-      Key: fileName,
-      Body: audioBuffer,
-      ContentType: "audio/aac",
-    };
-
-    s3.upload(params, async (err, data) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("S3 upload error");
-      }
-
-      meeting.audioLogs.push(data.Location);
-      await meeting.save();
-
-      res
-        .status(200)
-        .json({ msg: "Audio uploaded successfully to S3", meeting });
-    });
+    res.status(200).json({ msg: "Audio successfully added", meeting });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

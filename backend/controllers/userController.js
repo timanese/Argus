@@ -46,7 +46,7 @@ exports.register = async (req, res) => {
     // Save the user in the database
     await user.save();
 
-    const { password, ...rest } = user;
+    let { pass, ...rest } = user._doc;
 
     res.json(rest);
   } catch (err) {
@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    const { pass, ...rest } = user;
+    const { pass, ...rest } = user._doc;
 
     res.json(rest);
   } catch (err) {

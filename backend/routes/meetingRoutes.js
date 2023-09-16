@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const meetingController = require("../controllers/meetingController");
-const jwt = require("jsonwebtoken");
 
 router.post("/:meetingId/uploadGPS", meetingController.uploadGPS);
 

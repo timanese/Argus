@@ -8,4 +8,8 @@ router.post("/register", userController.register);
 // Authenticate a user
 router.post("/login", userController.login);
 
+router.get("/:id/emergencyContacts", userController.getAllEmergencyContacts);
+
+router.put("/:id/emergencyContact", userController.createEmergencyContact);
+
 module.exports = router;

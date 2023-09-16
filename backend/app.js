@@ -20,6 +20,10 @@ app.use(express.json());
 
 // Create an HTTP server instance with your Express app
 const server = http.createServer(app);
+const io = require('socket.io')(server);
+
+// Initialize your socketHandler here
+socketHandler(io);
 
 // Routes
 app.use("/api/users", require("./routes/userRoutes"));
@@ -29,9 +33,8 @@ app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 // Start server
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  socketHandler(); // Initialize your socketHandler here
 });
 
 // Export the server instance so you can use it elsewhere

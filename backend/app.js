@@ -18,6 +18,7 @@ app.use(express.json());
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/pictures", require("./routes/pictureRoutes"));
 app.use("/api/exchanges", require("./routes/exchangeRoutes"));
+app.use("/api/meetings", require("./routes/meetingRoutes"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 // Start server

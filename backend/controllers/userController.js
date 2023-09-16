@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const User = require("../models/User");
 const { uploadFile } = require('./pictureController'); // Import the uploadPicture function
 
 exports.register = async (req, res) => {

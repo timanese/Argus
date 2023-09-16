@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const { uploadFile } = require('./pictureController'); // Import the uploadPicture function
+const { uploadFile } = require("./pictureController"); // Import the uploadPicture function
 
 exports.register = async (req, res) => {
   const {
@@ -79,9 +79,44 @@ exports.login = async (req, res) => {
       { expiresIn: 3600 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, id: user.id, username: user.username });
       }
     );
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.getAllEmergencyContacts = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("emergencyContacts");
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.json(user.emergencyContacts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.createEmergencyContact = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { firstName, lastName, phoneNumber } = req.body;
+    const newContact = { firstName, lastName, phoneNumber };
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    user.emergencyContacts.push(newContact);
+    await user.save();
+
+    res.json(newContact);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

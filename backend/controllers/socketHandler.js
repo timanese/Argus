@@ -1,10 +1,10 @@
-const server = require('./../app.js'); // Replace with the actual path to your app.js
+const server = require("./../app.js"); // Replace with the actual path to your app.js
 
 const roomGPSLogs = {}; // Store locations by room ID
 const roomAudioFiles = {}; // Store audio file IDs for each room
 
 module.exports = function (io) {
-  io.on('connection', (socket) => {
+    io.on('connection', (socket) => {
     console.log('New client connected');
 
     // Join a room

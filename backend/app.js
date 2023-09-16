@@ -15,8 +15,6 @@ app.use(express.json());
 
 // Routes
 app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/postings", require("./routes/postingRoutes"));
-app.use("/api/conversations", require("./routes/conversationRoutes"));
 app.use("/api/exchanges", require("./routes/exchangeRoutes"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
 

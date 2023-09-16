@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const ExchangeSchema = new mongoose.Schema({
+const MeetingSchema = new mongoose.Schema({
+  level: { type: String, enum: ["1", "2"], required: true },
   initiatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -21,6 +22,7 @@ const ExchangeSchema = new mongoose.Schema({
   },
   audioLogs: [{ type: String }], // URLs or IDs of audio files
   gpsLogs: [{ type: String }], // GPS coordinates as strings
+  timeLogs: [{ type: Date }],
 });
 
-module.exports = mongoose.model("Exchange", ExchangeSchema);
+module.exports = mongoose.model("Meeting", MeetingSchema);

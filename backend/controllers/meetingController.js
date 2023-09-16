@@ -103,40 +103,6 @@ exports.request = async (req, res) => {
   }
 };
 
-exports.share = async (req, res) => {
-  const { uniqueId } = req.params;
-
-  try {
-    // Find the meeting by its unique ID
-    let meeting = await Meeting.findOne({ uniqueId });
-
-    // Check if the meeting exists
-    if (!meeting) {
-      return res.status(404).json({ msg: "Meeting not found" });
-    }
-
-    // Logic for checking user's login status and redirecting appropriately
-    if (req.user) {
-      // If the middleware sets req.user, the user is authenticated
-      // User is logged in, redirect them to the pending meeting details page
-      const redirectUrl = `/meetings/pending/${uniqueId}`;
-      return res
-        .status(200)
-        .json({ msg: "User is logged in, redirecting", redirectUrl });
-    } else {
-      // User is not logged in, redirect them to the login page with a `redirect_uri` parameter
-      const redirectUrl = `/login?redirect_uri=/meetings/pending/${uniqueId}`;
-      return res.status(200).json({
-        msg: "User is not logged in, redirecting to login",
-        redirectUrl,
-      });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-};
-
 exports.accept = async (req, res) => {
   const { id } = req.params;
   const { acceptedBy } = req.body;

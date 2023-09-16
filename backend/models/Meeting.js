@@ -9,7 +9,16 @@ const MeetingSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  initiatedByEmergencyContact: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   acceptedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  acceptedByEmergencyContact: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },

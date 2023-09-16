@@ -1,8 +1,10 @@
 "use client";
-
+import { Link as ReactRouterLink } from "react-router-dom";
 import {
   Flex,
   Box,
+  Link,
+  Tooltip,
   FormControl,
   FormLabel,
   Input,
@@ -79,6 +81,16 @@ export default function RegisterPage() {
                 </InputRightElement>
               </InputGroup>
             </FormControl>
+            <Tooltip
+              label="By checking this box, you consent to receive text messages from Argus about promotions, updates, and important information. Message and data rates may apply."
+              placement="top"
+              openDelay={500}
+            >
+              <FormControl id="opted-in">
+                <Checkbox>Yes, I would like to receive text alerts.*</Checkbox>
+              </FormControl>
+            </Tooltip>
+
             <Stack spacing={10} pt={2}>
               <Button
                 loadingText="Submitting"
@@ -92,10 +104,11 @@ export default function RegisterPage() {
                 Sign up
               </Button>
             </Stack>
-            <Stack pt={6}>
-              <Checkbox defaultChecked>Opt into text messages alerts</Checkbox>
-
-              <Text align={"center"}>Already a user? Login</Text>
+            <Stack direction={{ base: "row", sm: "row" }} align={"start"}>
+              <Text as={"span"}>Already have an account?</Text>
+              <Link as={"span"} color={"blue.400"}>
+                <ReactRouterLink to={"/login"}>Login</ReactRouterLink>
+              </Link>
             </Stack>
           </Stack>
         </Box>

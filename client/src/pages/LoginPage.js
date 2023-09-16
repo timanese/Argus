@@ -1,5 +1,5 @@
 "use client";
-
+import { Link as ReactRouterLink } from "react-router-dom";
 import {
   Flex,
   Box,
@@ -7,6 +7,7 @@ import {
   FormLabel,
   Input,
   Checkbox,
+  Link,
   Stack,
   Button,
   Heading,
@@ -45,13 +46,6 @@ export default function LoginPage() {
               <Input type="password" />
             </FormControl>
             <Stack spacing={10}>
-              <Stack
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-              >
-                <Text color={"blue.400"}>Already have an account? Sign In</Text>
-              </Stack>
               <Button
                 bg={"blue.400"}
                 color={"white"}
@@ -62,6 +56,15 @@ export default function LoginPage() {
                 Sign in
               </Button>
             </Stack>
+            <Stack
+                direction={{ base: "row", sm: "row" }}
+                align={"start"}
+              >
+                <Text as={"span"}>Don't have an account?</Text>
+                <Link as={"span"} color={"blue.400"}>
+                  <ReactRouterLink to={"/register"}>Register</ReactRouterLink>
+                </Link>
+              </Stack>
           </Stack>
         </Box>
       </Stack>

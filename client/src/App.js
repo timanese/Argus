@@ -5,6 +5,7 @@ import { UserProvider, useAuth } from "./contexts/UserContext";
 import HomePage from "./pages/homePage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 const LOGIN_ROUTE = "/login";
 
@@ -41,6 +42,7 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path={LOGIN_ROUTE} element={<LoginPage />} />
         </Routes>
       </UserProvider>

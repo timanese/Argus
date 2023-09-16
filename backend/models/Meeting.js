@@ -12,7 +12,10 @@ const MeetingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  location: { type: String, required: true },
+  location: {
+    lat: { type: String },
+    long: { type: String },
+  },
   startTime: { type: Date, required: true },
   endTime: { type: Date },
   status: {
@@ -21,7 +24,12 @@ const MeetingSchema = new mongoose.Schema({
     default: "pending",
   },
   audioLogs: [{ type: String }], // URLs or IDs of audio files
-  gpsLogs: [{ type: String }], // GPS coordinates as strings
+  gpsLogs: [
+    {
+      lat: { type: String },
+      long: { type: String },
+    },
+  ],
   timeLogs: [{ type: Date }],
 });
 

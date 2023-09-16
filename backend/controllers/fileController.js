@@ -63,8 +63,6 @@ exports.pushFile = async (req, res) => {
   }
 };
 
-
-
 /////////////////////////////
 // FILE HANDLING           //
 /////////////////////////////
@@ -79,7 +77,6 @@ const storage = multer.diskStorage({
 });
 
 const uploadFiles = multer({ storage: storage });
-
 
 exports.getFileAsPlainText = async (req, res) => {
   var plainTextList = [];

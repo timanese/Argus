@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const User = require("../models/User");
 
 exports.register = async (req, res) => {
@@ -28,9 +29,9 @@ exports.register = async (req, res) => {
       phoneNumber,
       password,
       emergencyContacts,
-      profilePicture,
-      driversLicenseFront,
-      driversLicenseBack,
+      profilePicture: mongoose.Types.ObjectId(profilePicture),
+      driversLicenseFront: mongoose.Types.ObjectId(driversLicenseFront),
+      driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
     });
 
     // Hash the password

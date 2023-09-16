@@ -20,9 +20,16 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    // Navigate to OnboardingPage after successful registration
+    navigate("/onboarding");
+  };
 
   return (
     <Flex
@@ -100,6 +107,7 @@ export default function RegisterPage() {
                 _hover={{
                   bg: "blue.500",
                 }}
+                onClick={handleSignUp}
               >
                 Sign up
               </Button>

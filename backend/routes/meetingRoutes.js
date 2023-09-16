@@ -4,7 +4,7 @@ const meetingController = require("../controllers/meetingController");
 
 router.post("/:meetingId/uploadGPS", meetingController.uploadGPS);
 
-router.post("/:meetingId/uploadAudioBlob", meetingController.uploadAudio);
+router.post("/:meetingId/uploadAudio", meetingController.uploadAudio);
 
 // Get all meetings
 router.get("/:id/getAll", meetingController.getAllMeetings);

@@ -6,6 +6,7 @@ import HomePage from "./pages/homePage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import OnboardingPage from "./pages/OnboardingPage";
 
 const LOGIN_ROUTE = "/login";
 
@@ -44,6 +45,7 @@ function App() {
           />
           <Route path="/register" element={<RegisterPage />} />
           <Route path={LOGIN_ROUTE} element={<LoginPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>

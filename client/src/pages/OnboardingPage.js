@@ -13,6 +13,7 @@ import {
   FormLabel,
   Input,
   Select,
+  Divider,
   SimpleGrid,
   InputLeftAddon,
   InputGroup,
@@ -197,18 +198,12 @@ const Form3 = () => {
     components.push(
       <div key={i}>
         <Text>{"Emergency Contact " + (i + 1)} </Text>
-        <Flex>
+        <Flex pb={4}>
           <FormControl mr="5%">
-            <FormLabel htmlFor="first-name" fontWeight={"normal"}>
-              First name
-            </FormLabel>
             <Input id="first-name" placeholder="First name" />
           </FormControl>
 
           <FormControl>
-            <FormLabel htmlFor="last-name" fontWeight={"normal"}>
-              Last name
-            </FormLabel>
             <Input id="last-name" placeholder="First name" />
           </FormControl>
         </Flex>
@@ -218,7 +213,7 @@ const Form3 = () => {
           </InputLeftElement>
           <Input type="tel" placeholder="Phone number" />
         </InputGroup>
-        <Checkbox defaultChecked>Opt into text messages alerts</Checkbox>
+        <Divider p={1} />
       </div>
     );
   }

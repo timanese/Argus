@@ -65,13 +65,14 @@ export function UserProvider({ children }) {
 
   async function checkIfLoggedIn() {
     let accessToken = sessionStorage.getItem(ACCESS_TOKEN_SESSION_STORAGE);
-    if (accessToken === null) {
+    if (accessToken) {
       setUser();
       sessionStorage.removeItem(ACCESS_TOKEN_SESSION_STORAGE);
       console.log("Not logged in.");
       setLoading(false);
     } else {
       console.log("Still logged in.");
+      setLoading(false);
     }
   }
 

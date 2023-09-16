@@ -3,9 +3,6 @@ const router = express.Router();
 const meetingController = require("../controllers/meetingController");
 const jwt = require("jsonwebtoken");
 
-// Request an exchange
-router.post("/request", meetingController.request);
-
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -18,6 +15,13 @@ const authenticateJWT = (req, res, next) => {
     next();
   });
 };
+
+router.post("/:meetingId/uploadGPS", meetingController.uploadGPS);
+
+router.post("/:meetingId/uploadAudioBlob", meetingController.uploadAudioBlob);
+
+// Request an exchange
+router.post("/request", meetingController.request);
 
 router.get("/share/:uniqueId", authenticateJWT, meetingController.share);
 

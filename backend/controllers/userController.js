@@ -29,9 +29,9 @@ exports.register = async (req, res) => {
       phoneNumber,
       password,
       emergencyContacts,
-      profilePicture: mongoose.Types.ObjectId(profilePicture),
-      driversLicenseFront: mongoose.Types.ObjectId(driversLicenseFront),
-      driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
+      //   profilePicture: mongoose.Types.ObjectId(profilePicture),
+      //   driversLicenseFront: mongoose.Types.ObjectId(driversLicenseFront),
+      //   driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
     });
 
     // Hash the password

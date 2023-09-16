@@ -1,5 +1,63 @@
 const crypto = require("crypto");
 const Meeting = require("../models/Meeting");
+const User = require("../models/User");
+const twilioClient = require("../config/twilio");
+const s3 = require("../config/s3");
+
+exports.uploadGPS = async (req, res) => {
+  try {
+    const { meetingId } = req.params;
+    const { gpsLog } = req.body;
+    const meeting = await Meeting.findById(meetingId);
+    if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
+
+    // Add the GPS log to the gpsLogs array
+    meeting.gpsLogs.push(gpsLog);
+
+    await meeting.save();
+    res.status(200).json({ msg: "GPS log added successfully", meeting });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.uploadAudioBlob = async (req, res) => {
+  const { meetingId } = req.params;
+  const audioBlob = req.body.audioBlob;
+
+  try {
+    const meeting = await Meeting.findById(meetingId);
+    if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
+
+    const audioBuffer = Buffer.from(audioBlob, "base64");
+    const fileName = `${meetingId}-${Date.now()}.aac`;
+
+    const params = {
+      Bucket: "your-bucket-name",
+      Key: fileName,
+      Body: audioBuffer,
+      ContentType: "audio/aac",
+    };
+
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("S3 upload error");
+      }
+
+      meeting.audioLogs.push(data.Location);
+      await meeting.save();
+
+      res
+        .status(200)
+        .json({ msg: "Audio uploaded successfully to S3", meeting });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
 
 exports.request = async (req, res) => {
   const { level, initiatedBy, location, startTime } = req.body;
@@ -104,9 +162,74 @@ exports.accept = async (req, res) => {
 };
 
 exports.initiate = async (req, res) => {
-  // TODO: Implement logic to initiate the actual meeting
+  const { id } = req.params;
+
+  try {
+    const meeting = await Meeting.findById(id)
+      .populate("initiatedBy", "emergencyContacts")
+      .populate("acceptedBy", "emergencyContacts");
+
+    if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
+
+    const shareableId = crypto.randomBytes(16).toString("hex");
+    const shareableLink = `http://localhost:3000/emergency/${shareableId}`;
+
+    // Store the shareableId in the meeting model (You may want to do this)
+    meeting.uniqueId = shareableId;
+    await meeting.save();
+
+    const initiatorContacts = meeting.initiatedBy.emergencyContacts;
+    const acceptorContacts = meeting.acceptedBy.emergencyContacts;
+    const allContacts = [...initiatorContacts, ...acceptorContacts];
+    console.log(allContacts);
+
+    // Send SMS
+    for (const contact of allContacts) {
+      await twilioClient.messages.create({
+        body: `Emergency Alert: You can view the audio and GPS logs for this meeting here: ${shareableLink}`,
+        to: contact.phoneNumber,
+        from: "+15005550006",
+      });
+    }
+
+    res.status(200).json({ msg: "Initialization successful", shareableLink });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 };
 
 exports.complete = async (req, res) => {
-  // TODO: Implement logic to mark an meeting as complete
+  const { meetingId } = req.params;
+
+  try {
+    const meeting = await Meeting.findById(meetingId)
+      .populate("initiatedBy", "emergencyContacts")
+      .populate("acceptedBy", "emergencyContacts");
+
+    if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
+
+    // Update meeting status
+    meeting.status = "completed";
+    await meeting.save();
+
+    // Extract emergency contacts
+    const initiatorContacts = meeting.initiatedBy.emergencyContacts;
+    const acceptorContacts = meeting.acceptedBy.emergencyContacts;
+    const allContacts = [...initiatorContacts, ...acceptorContacts];
+
+    // Send SMS to inform contacts that parties are safe
+    for (const contact of allContacts) {
+      await twilioClient.messages.create({
+        body: `Safety Alert: The meeting between ${meeting.initiatedBy.username} and ${meeting.acceptedBy.username} has been safely completed.`,
+        to: contact.phoneNumber,
+        from: "+18449943470",
+      });
+    }
+
+    res.status(200).json({ msg: "Meeting successfully completed" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 };

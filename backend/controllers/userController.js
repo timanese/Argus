@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const { uploadFile } = require('./pictureController'); // Import the uploadPicture function
 
 exports.register = async (req, res) => {
   const {
@@ -9,10 +10,9 @@ exports.register = async (req, res) => {
     email,
     phoneNumber,
     password,
-    emergencyContacts,
-    profilePicture,
-    driversLicenseFront,
-    driversLicenseBack,
+    profilePictureId,
+    driversLicenseFrontId,
+    driversLicenseBackId,
   } = req.body;
 
   try {
@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
     user = new User({
       username,
       email,
-      phoneNumber,
+      phoneNumber,s
       password,
       emergencyContacts,
       //   profilePicture: mongoose.Types.ObjectId(profilePicture),
@@ -34,14 +34,16 @@ exports.register = async (req, res) => {
       //   driversLicenseBack: mongoose.Types.ObjectId(driversLicenseBack),
     });
 
+    if (!password) {
+      return res.status(400).json({ msg: "Password is required" });
+    }
+
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
 
     // Save the user in the database
     await user.save();
-
-    // You can also generate and send a JWT token here if needed
 
     res.status(201).json({ msg: "User registered successfully" });
   } catch (err) {

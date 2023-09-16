@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { GridFSBucket } = require('mongodb');
 
 const connectDB = async () => {
   const uri = process.env.MONGO_URI;

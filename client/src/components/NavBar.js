@@ -83,10 +83,10 @@ export default function NavBar() {
                 />
               </MenuButton>
               <MenuList>
-                <MenuItem>Link 1</MenuItem>
-                <MenuItem>Link 2</MenuItem>
+                <MenuItem>View Profile</MenuItem>
+                <MenuItem>Update Profile</MenuItem>
                 <MenuDivider />
-                <MenuItem>Link 3</MenuItem>
+                <MenuItem>Preferences</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
@@ -102,8 +102,6 @@ export default function NavBar() {
           </Box>
         ) : null}
       </Box>
-
-      <Box p={4}>Main Content Here</Box>
     </>
   );
 }

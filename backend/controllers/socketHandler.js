@@ -40,6 +40,11 @@ module.exports = function (io) {
       io.to(roomId).emit('updateAudio', audioFileId);
     });
 
+    // When an emergency contact joins late and requests past GPS logs
+    socket.on('requestPastGPSLogs', (roomId) => {
+      socket.emit('pastGPSLogs', roomGPSLogs[roomId]);
+    });
+
     // When an emergency contact joins late and requests past audio files
     socket.on('requestPastAudios', (roomId) => {
       socket.emit('pastAudios', roomAudioFiles[roomId]);

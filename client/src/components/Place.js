@@ -5,7 +5,6 @@ import usePlacesAutocomplete, {
   getLatLng,
 } from "use-places-autocomplete";
 import { Box, Input, List, ListItem } from "@chakra-ui/react";
-import "@reach/combobox/styles.css";
 
 export default function Places() {
   const { isLoaded } = useLoadScript({

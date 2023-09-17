@@ -21,4 +21,6 @@ router.put("/:id/initiate", meetingController.initiate);
 // Mark an exchange as complete
 router.put("/:id/complete", meetingController.complete);
 
+router.get("/:id", meetingController.getMeetingById);
+
 module.exports = router;

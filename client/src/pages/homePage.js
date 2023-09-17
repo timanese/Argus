@@ -10,12 +10,16 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import { AddIcon } from "@chakra-ui/icons"; // Import the AddIcon
 import NavBar from "../components/NavBar";
+import SubmitModal from "./../components/SubmitModal"; // Import the SubmitModal component
+import RequestMeetingPage from "./RequestMeetingPage";
 
 function StatsCard(props) {
   // const { name, location } = props;
   const { meetingTitle, startTime, location, level } = props;
+
   return (
     <Stat
       px={{ base: 4, md: 8 }}
@@ -111,6 +115,16 @@ export default function HomePage() {
   const [meetings, setMeetings] = useState([]);
   const [currentMeetings, setCurrentMeetings] = useState([]);
   const [previousMeetings, setPreviousMeetings] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Step 2
+  const navigate = useNavigate();
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     // Fetch all meetings for a user (replace 'userId' with the actual user ID)
@@ -172,7 +186,12 @@ export default function HomePage() {
          </TabPanel>
         </TabPanels>
          </Tabs>
-        {/* Add the circular button with the plus icon */}
+         <SubmitModal
+        title="Request a Meeting"
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        />
+        {/* Step 3 */}
         <IconButton
           icon={<AddIcon />}
           isRound
@@ -181,6 +200,7 @@ export default function HomePage() {
           position="fixed"
           bottom="4"
           right="4"
+          onClick={navigate("/requestMeeting")} // Open the modal when clicked
         />
       </Box>
     </div>

@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const Meeting = require("../models/Meeting");
 const User = require("../models/User");
-const twilioClient = require("../config/twilio");
+const twilioClient = require("../__tests__/config/twilio");
 
 // General-purpose function to upload GPS data
 const uploadGPSData = async (meetingId, gpsLog) => {
@@ -123,7 +123,6 @@ exports.request = async (req, res) => {
     const shareableUrl = `http://localhost:3001/api/meetings/share/${uniqueId}`;
 
     // Ideally, you would associate this uniqueId with the meeting record in the database for later retrieval.
-
     res
       .status(201)
       .json({ msg: "Meeting requested successfully", meeting, shareableUrl });
@@ -139,7 +138,8 @@ exports.accept = async (req, res) => {
 
   try {
     // Find the meeting by its ID
-    let meeting = await Meeting.findById(id);
+    const meeting = await Meeting.findById(id)
+    .populate("initiatedBy");
 
     // Check if the meeting exists
     if (!meeting) {
@@ -147,7 +147,7 @@ exports.accept = async (req, res) => {
     }
 
     // Check if the meeting is already accepted
-    if (meeting.status !== "pending") {
+    if (meeting.status !== "Pending") {
       return res
         .status(400)
         .json({ msg: "Meeting is already accepted or completed" });
@@ -157,6 +157,23 @@ exports.accept = async (req, res) => {
     meeting.acceptedBy = acceptedBy;
     meeting.acceptedByEmergencyContact = acceptedByEmergencyContact;
     meeting.status = "ongoing";
+
+    // Message to be sent to the initiator of the meeting
+    const initiatorMessage = `Your meeting request has been accepted by ${acceptedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
+      
+    await twilioClient.messages.create({
+        body: initiatorMessage,
+        to: meeting.initiatedBy.phoneNumber,
+        from: "+18335181680",
+      });
+
+    const acceptedByEmergencyContactMessage = `Hello ${acceptedByEmergencyContact.firstName}, this message is to notify you that your friend ${acceptedBy.firstName} has accepted a meeting request from ${meeting.initiatedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
+
+    await twilioClient.messages.create({
+        body: acceptedByEmergencyContactMessage,
+        to: acceptedByEmergencyContact.phoneNumber,
+        from: "+18335181680",
+      });
 
     // Save the updated meeting
     await meeting.save();

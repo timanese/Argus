@@ -146,7 +146,6 @@ const AcceptMeetingPage = () => {
     // Add decline API call here if needed
     navigate("/"); // Navigate back to home
   };
-
   return (
     <div
       style={{

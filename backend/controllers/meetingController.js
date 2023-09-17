@@ -245,3 +245,16 @@ exports.complete = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+// Get a single meeting by ID
+exports.getMeetingById = async (req, res) => {
+  try {
+    const meeting = await Meeting.findById(req.params.id);
+    if (!meeting) {
+      return res.status(404).json({ message: "Meeting not found" });
+    }
+    res.status(200).json(meeting);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};

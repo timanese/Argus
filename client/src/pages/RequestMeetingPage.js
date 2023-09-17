@@ -28,12 +28,12 @@
 //   Text,
 //   Checkbox,
 //   Radio,
-//   RadioGroup, 
+//   RadioGroup,
 //   VStack,
 //   useDisclosure
 // } from "@chakra-ui/react";
 // import { PhoneIcon, CalendarIcon, CheckCircleIcon } from "@chakra-ui/icons";
-// import CreateContactModal from './../components/CreateContactModal'; 
+// import CreateContactModal from './../components/CreateContactModal';
 
 // import { useToast } from "@chakra-ui/react";
 // import { useAuth } from "../contexts/UserContext";
@@ -44,7 +44,7 @@
 //   const [meetingTitle, setMeetingTitle] = useState("");
 //   const [timeDate, setTimeDate] = useState("");
 //   const [monitorLevel, setMonitorLevel] = useState(1);
-  
+
 //   return (
 //     <>
 //       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
@@ -99,7 +99,7 @@
 //       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
 //         Who are you meeting with?
 //       </Heading>
-      
+
 //       <Text mt={4}>Name</Text>
 //       <InputGroup>
 //         <InputLeftElement pointerEvents="none">
@@ -125,7 +125,7 @@
 //             onChange={(e) => setPhoneNumber(e.target.value)} // Pass index 'i' here placeholder="Phone number" />
 //           />
 //         </InputGroup>
-      
+
 //     </>
 //   );
 // };
@@ -156,7 +156,6 @@
 //     </>
 //   );
 // };
-
 
 // const Form4 = () => {
 //   const [emergencyContacts, setEmergencyContacts] = useState([]);
@@ -216,7 +215,7 @@
 //           </VStack>
 //         </RadioGroup>
 //       </Box>
-      
+
 //       <CreateContactModal isOpen={isOpen} onClose={onClose} onSubmit={createNewContact} />
 //     </>
 //   );
@@ -340,7 +339,7 @@
 //   );
 // }
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Progress,
   Box,
@@ -357,13 +356,13 @@ import {
   useDisclosure,
   RadioGroup,
   VStack,
-  Radio
-} from '@chakra-ui/react';
-import { PhoneIcon, CalendarIcon, CheckCircleIcon } from '@chakra-ui/icons';
-import CreateContactModal from './../components/CreateContactModal';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/UserContext';
+  Radio,
+} from "@chakra-ui/react";
+import { PhoneIcon, CalendarIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import CreateContactModal from "./../components/CreateContactModal";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/UserContext";
 
 export default function RequestMeetingPage() {
   const [step, setStep] = useState(1);
@@ -423,31 +422,94 @@ export default function RequestMeetingPage() {
       });
   };
 
-
   useEffect(() => {
     // Fetch all emergency contacts for a user
-    axios.get(`http://localhost:3001/api/users/${userId}/emergencyContacts`)
+    axios
+      .get(`http://localhost:3001/api/users/${userId}/emergencyContacts`)
       .then((res) => {
         setEmergencyContacts(res.data);
       })
       .catch((err) => {
-        console.error('Error fetching emergency contacts:', err);
+        console.error("Error fetching emergency contacts:", err);
       });
   }, []);
 
   return (
     <>
-      <Box borderWidth="1px" rounded="lg" shadow="1px 1px 3px rgba(0,0,0,0.3)" maxWidth={800} p={6} m="10px auto" as="form">
+      <Box
+        borderWidth="1px"
+        rounded="lg"
+        shadow="1px 1px 3px rgba(0,0,0,0.3)"
+        maxWidth={800}
+        p={6}
+        m="10px auto"
+        as="form"
+      >
         <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated />
-        {step === 1 ? <Form1 meetingTitle={meetingTitle} setMeetingTitle={setMeetingTitle} timeDate={timeDate} setTimeDate={setTimeDate} monitorLevel={monitorLevel} setMonitorLevel={setMonitorLevel} /> : null}
-        {step === 2 ? <Form2 name={name} setName={setName} phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber} /> : null}
-        {step === 3 ? <Form3 userId={userId}/> : null}
-        {step === 4 ? <Form4 selectedContact={selectedContact} setSelectedContact={setSelectedContact} emergencyContacts={emergencyContacts} setEmergencyContacts={setEmergencyContacts} userId={userId} /> : null}
+        {step === 1 ? (
+          <Form1
+            meetingTitle={meetingTitle}
+            setMeetingTitle={setMeetingTitle}
+            timeDate={timeDate}
+            setTimeDate={setTimeDate}
+            monitorLevel={monitorLevel}
+            setMonitorLevel={setMonitorLevel}
+          />
+        ) : null}
+        {step === 2 ? (
+          <Form2
+            name={name}
+            setName={setName}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+          />
+        ) : null}
+        {step === 3 ? <Form3 userId={userId} /> : null}
+        {step === 4 ? (
+          <Form4
+            selectedContact={selectedContact}
+            setSelectedContact={setSelectedContact}
+            emergencyContacts={emergencyContacts}
+            setEmergencyContacts={setEmergencyContacts}
+            userId={userId}
+          />
+        ) : null}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
-            <Button onClick={() => { (step === 1) ? navigate(-1) : setStep(step - 1); setProgress(progress - 33.33); }} colorScheme="teal" variant="solid" w="7rem" mr="5%">Back</Button>
-            <Button w="7rem" display={step === 4 ? "none" : "block"} onClick={() => { setStep(step + 1); setProgress(progress + 33.33); }} colorScheme="teal" variant="outline">Next</Button>
-            {step === 4 ? <Button w="7rem" colorScheme="red" variant="solid" onClick={onSubmit}>Submit</Button> : null}
+            <Button
+              onClick={() => {
+                step === 1 ? navigate(-1) : setStep(step - 1);
+                setProgress(progress - 33.33);
+              }}
+              colorScheme="teal"
+              variant="solid"
+              w="7rem"
+              mr="5%"
+            >
+              Back
+            </Button>
+            <Button
+              w="7rem"
+              display={step === 4 ? "none" : "block"}
+              onClick={() => {
+                setStep(step + 1);
+                setProgress(progress + 33.33);
+              }}
+              colorScheme="teal"
+              variant="outline"
+            >
+              Next
+            </Button>
+            {step === 4 ? (
+              <Button
+                w="7rem"
+                colorScheme="red"
+                variant="solid"
+                onClick={onSubmit}
+              >
+                Submit
+              </Button>
+            ) : null}
           </Flex>
         </ButtonGroup>
       </Box>
@@ -455,23 +517,51 @@ export default function RequestMeetingPage() {
   );
 }
 
-const Form1 = ({ meetingTitle, setMeetingTitle, timeDate, setTimeDate, monitorLevel, setMonitorLevel }) => {
+const Form1 = ({
+  meetingTitle,
+  setMeetingTitle,
+  timeDate,
+  setTimeDate,
+  monitorLevel,
+  setMonitorLevel,
+}) => {
   return (
     <>
-      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">Where and When?</Heading>
+      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
+        Where and When?
+      </Heading>
       <Text mt={4}>Meeting Title</Text>
       <InputGroup>
-        <InputLeftElement pointerEvents="none"><CheckCircleIcon color="gray.300" /></InputLeftElement>
-        <Input type="text" name="meetingTitle" value={meetingTitle} onChange={(e) => setMeetingTitle(e.target.value)} placeholder="Coffee chat with John Doe" />
+        <InputLeftElement pointerEvents="none">
+          <CheckCircleIcon color="gray.300" />
+        </InputLeftElement>
+        <Input
+          type="text"
+          name="meetingTitle"
+          value={meetingTitle}
+          onChange={(e) => setMeetingTitle(e.target.value)}
+          placeholder="Coffee chat with John Doe"
+        />
       </InputGroup>
       <Text mt={4}>Meeting Date and Time</Text>
       <InputGroup>
-        <InputLeftElement pointerEvents="none"><CalendarIcon color="gray.300" /></InputLeftElement>
-        <Input type="datetime-local" name="meetingDateTime" value={timeDate} onChange={(e) => setTimeDate(e.target.value)} />
+        <InputLeftElement pointerEvents="none">
+          <CalendarIcon color="gray.300" />
+        </InputLeftElement>
+        <Input
+          type="datetime-local"
+          name="meetingDateTime"
+          value={timeDate}
+          onChange={(e) => setTimeDate(e.target.value)}
+        />
       </InputGroup>
       <Text mt={4}>Monitor Level</Text>
       <InputGroup>
-        <Select name="monitorLevel" value={monitorLevel} onChange={(e) => setMonitorLevel(e.target.value)}>
+        <Select
+          name="monitorLevel"
+          value={monitorLevel}
+          onChange={(e) => setMonitorLevel(e.target.value)}
+        >
           <option value="1">1</option>
           <option value="2">2</option>
         </Select>
@@ -483,54 +573,77 @@ const Form1 = ({ meetingTitle, setMeetingTitle, timeDate, setTimeDate, monitorLe
 const Form2 = ({ name, setName, phoneNumber, setPhoneNumber }) => {
   return (
     <>
-      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">Who are you meeting with?</Heading>
+      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
+        Who are you meeting with?
+      </Heading>
       <Text mt={4}>Name</Text>
       <InputGroup>
-        <InputLeftElement pointerEvents="none"><CheckCircleIcon color="gray.300" /></InputLeftElement>
-        <Input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" />
+        <InputLeftElement pointerEvents="none">
+          <CheckCircleIcon color="gray.300" />
+        </InputLeftElement>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="John Doe"
+        />
       </InputGroup>
       <Text mt={4}>Phone Number</Text>
       <InputGroup>
-        <InputLeftElement pointerEvents="none"><PhoneIcon color="gray.300" /></InputLeftElement>
-        <Input type="tel" name="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+        <InputLeftElement pointerEvents="none">
+          <PhoneIcon color="gray.300" />
+        </InputLeftElement>
+        <Input
+          type="tel"
+          name="phoneNumber"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
       </InputGroup>
     </>
   );
 };
 
 const Form3 = (userId) => {
-  return (
-    <>
-      {/* Your Form3 content here */}
-    </>
-  );
+  return <>{/* Your Form3 content here */}</>;
 };
 
-const Form4 = ({ selectedContact, setSelectedContact, emergencyContacts, setEmergencyContacts, userId }) => {
+const Form4 = ({
+  selectedContact,
+  setSelectedContact,
+  emergencyContacts,
+  setEmergencyContacts,
+  userId,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const createNewContact = (newContact) => {
-      axios.put(`http://localhost:3001/api/users/${userId}/emergencyContact`, newContact)
-        .then((res) => {
-          setEmergencyContacts(prevContacts => [...prevContacts, res.data]);
-        })
-        .catch((err) => {
-          console.error('Error creating new emergency contact:', err);
-        });
-    };
+  const createNewContact = (newContact) => {
+    axios
+      .put(
+        `http://localhost:3001/api/users/${userId}/emergencyContact`,
+        newContact
+      )
+      .then((res) => {
+        setEmergencyContacts((prevContacts) => [...prevContacts, res.data]);
+      })
+      .catch((err) => {
+        console.error("Error creating new emergency contact:", err);
+      });
+  };
 
   return (
     <>
-       <Heading w="100%" textAlign={"center"} fontWeight="normal">
-         Select an Emergency Contact
-       </Heading>
-       <Button mt={4} onClick={onOpen}>
-         Create New Emergency Contact
-       </Button>
-       <Box mt={4}>
-         <RadioGroup onChange={setSelectedContact} value={selectedContact}>
-           <VStack align="start" spacing={4}>
-             {emergencyContacts.map((contact, index) => {
+      <Heading w="100%" textAlign={"center"} fontWeight="normal">
+        Select an Emergency Contact
+      </Heading>
+      <Button mt={4} onClick={onOpen}>
+        Create New Emergency Contact
+      </Button>
+      <Box mt={4}>
+        <RadioGroup onChange={setSelectedContact} value={selectedContact}>
+          <VStack align="start" spacing={4}>
+            {emergencyContacts.map((contact, index) => {
               if (!contact || !contact._id) {
                 console.error("Invalid contact:", contact);
                 return null; // Skip this iteration
@@ -547,8 +660,12 @@ const Form4 = ({ selectedContact, setSelectedContact, emergencyContacts, setEmer
           </VStack>
         </RadioGroup>
       </Box>
-      
-      <CreateContactModal isOpen={isOpen} onClose={onClose} onSubmit={createNewContact} />
+
+      <CreateContactModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={createNewContact}
+      />
     </>
   );
 };

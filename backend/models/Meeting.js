@@ -27,8 +27,8 @@ const MeetingSchema = new mongoose.Schema({
   endTime: { type: Date },
   status: {
     type: String,
-    enum: ["pending", "ongoing", "completed"],
-    default: "pending",
+    enum: ["Pending", "Scheduled", "Ongoing", "Completed"],
+    default: "Pending",
   },
   audioLogs: [{ type: String }], // URLs or IDs of audio files
   gpsLogs: [

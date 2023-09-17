@@ -22,12 +22,13 @@ import RequestMeetingPage from "./RequestMeetingPage";
 var bp = require("../Path.js");
 
 // Api call to initiate a meeting
-const initiateMeeting = (meetingId) => {
+const initiateMeeting = (meetingId, navigate) => {
   // console.log("Initiating meeting:", meetingId);
   axios
     .put(bp.buildPath(`/api/meetings/${meetingId}/initiate`))
     .then((res) => {
       console.log(res.data);
+      navigate(`/meeting/${meetingId}`);
     })
     .catch((err) => {
       console.error("Error initiating meeting:", err);
@@ -35,6 +36,7 @@ const initiateMeeting = (meetingId) => {
 };
 
 function StatsCard(props) {
+  const navigate = useNavigate();
   const { key, meeting, meetingTitle, startTime, location, level, status } =
     props;
 
@@ -72,7 +74,11 @@ function StatsCard(props) {
         {status !== "Scheduled" ? (
           <></>
         ) : (
-          <Button size="sm" mt={0} onClick={() => initiateMeeting(meeting._id)}>
+          <Button
+            size="sm"
+            mt={0}
+            onClick={() => initiateMeeting(meeting._id, navigate)}
+          >
             Start
           </Button>
         )}

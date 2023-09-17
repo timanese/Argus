@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   Heading,
   Avatar,
@@ -10,15 +10,19 @@ import {
   FormLabel,
   Switch,
   VStack,
+  Input,
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
 import NavBar from "../components/NavBar";
 import SubmitModal from "../components/SubmitModal";
+import { useAuth } from "../contexts/UserContext";
 
 export default function ProfilePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { user, logout} = useAuth();
+  const [optedIn, setOptedIn] = useState(user && user.optedInToNotifcations);
+  console.log(optedIn);
   return (
     <div>
       <NavBar />
@@ -40,10 +44,13 @@ export default function ProfilePage() {
             pos={"relative"}
           />
           <Heading fontSize={"2xl"} fontFamily={"body"}>
-            Lindsey James
+            {user && user.firstName} {user && user.lastName}
           </Heading>
-          <Text fontWeight={600} color={"gray.500"} mb={4}>
-            @lindsey_jam3s
+          <Text fontWeight={600} color={"gray.500"}>
+            {user && user.email}
+          </Text>
+          <Text fontWeight={600} color={"gray.500"} mb={2}>
+            {user && user.phoneNumber}
           </Text>
         </Box>
       </Center>
@@ -60,11 +67,20 @@ export default function ProfilePage() {
           >
             <FormControl display="flex" alignItems="center">
               <FormLabel htmlFor="email-alerts" mb="0" px="0">
-                Enable push notifcations
+                Enable push notifications
               </FormLabel>
-              <Switch id="email-alerts" px="3" size="lg" />
+              <Switch
+                onChange={(e) => {
+                  setOptedIn(e.target.checked);
+                }}
+                isChecked={optedIn}
+                id="email-alerts"
+                px="3"
+                size="lg"
+              />
             </FormControl>
           </Box>
+
           <Box
             maxW={"320px"}
             w={"full"}
@@ -114,14 +130,9 @@ export default function ProfilePage() {
         </VStack>
       </Center>
       <Center>
-        <SubmitModal
-          title="Personal Address"
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      </Center>
-      <Center>
-        <SubmitModal title="Phone Number" isOpen={isOpen} onClose={onClose} />
+        <Button px={32} colorScheme="red" onClick={logout} mt={6}>
+          Log Out
+        </Button>
       </Center>
     </div>
   );

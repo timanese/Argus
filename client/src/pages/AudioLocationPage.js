@@ -11,6 +11,8 @@ import {
   VStack,
   CircularProgress,
   Center,
+  Container,
+  Flex,
 } from "@chakra-ui/react";
 
 function AudioLocationPage() {
@@ -92,42 +94,46 @@ const handleEndMeeting = () => {
 
 
   return (
-    <VStack spacing={6} align="stretch">
-      <Heading as="h1">Audio & Location Recording</Heading>
-      <Button
-        colorScheme="green"
-        onClick={startRecording}
-        // isDisabled={!isRecording}
-      >
-        Start Recording
-      </Button>
-
-      <Button
-        colorScheme="red"
-        onClick={handleEndMeeting}
-        // isDisabled={!isRecording}
-      >
-        End Meeting
-      </Button>
-
-      <Center>
-        <Box position="absolute">
-          <Heading as="h4" size="md">
-            {isRecording ? "Recording..." : "Not Recording"}
+    <Flex minHeight="100vh" width="full" align="center" justifyContent="center">
+      <Container maxW="100%" height="90%" centerContent>
+        <VStack
+          spacing={6}
+          align="stretch"
+          p={6}
+          border="1px"
+          borderRadius="md"
+          boxShadow="md"
+        >
+          <Heading as="h1" size="2xl">
+            Audio & Location Recording
           </Heading>
-        </Box>
-      </Center>
 
-      <Box mt={8}>
-        {audioUrl && (
-          <AudioPlayer
-            style={{ width: "100%" }} // inline style for width
-            autoPlay={false}
-            src={audioUrl}
-          />
-        )}
-      </Box>
-    </VStack>
+          <Button colorScheme="green" onClick={startRecording}>
+            Start Recording
+          </Button>
+
+          <Button colorScheme="red" onClick={handleEndMeeting}>
+            End Meeting
+          </Button>
+
+          <Center>
+            <Box>
+              <Heading as="h4" size="md">
+                {isRecording ? "Recording..." : "Not Recording"}
+              </Heading>
+            </Box>
+          </Center>
+
+          <Box mt={8}>
+            <AudioPlayer
+              style={{ width: "100%" }} // inline style for width
+              autoPlay={false}
+              src={audioUrl}
+            />
+          </Box>
+        </VStack>
+      </Container>
+    </Flex>
   );
 }
 

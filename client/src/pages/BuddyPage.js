@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -152,16 +153,22 @@ const BuddyPage = () => {
         )}
       </div>
 
-      {/* Report Button and Modal */}
-      <Button
-        colorScheme="red"
-        onClick={openReportModal}
-        mt="4"
-        mx="auto"
-        display="block"
-      >
-        Report
-      </Button>
+      {/* Buttons */}
+      <Flex justifyContent="center" mt="10">
+        <Button colorScheme="red" onClick={openReportModal} mr="2">
+          Report
+        </Button>
+        <Button
+          as="a"
+          href={`https://www.google.com/maps/dir/?api=1&destination=${buddyLocation.lat},${buddyLocation.lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          colorScheme="teal"
+          ml="2"
+        >
+          Get Directions
+        </Button>
+      </Flex>
 
       <Modal isOpen={isReportModalOpen} onClose={closeReportModal}>
         <ModalOverlay />

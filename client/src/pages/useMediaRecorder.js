@@ -36,7 +36,10 @@ const useMediaRecorder = () => {
   };
 
   const handleDataAvailable = (event) => {
-    setChunks([...chunks, event.data]);
+    console.log(event.data);
+    if (event.data.size > 0) {
+      setChunks((prevChunks) => [...prevChunks, event.data]);
+    }
   };
 
   const getRecording = () => {

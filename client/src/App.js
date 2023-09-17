@@ -10,6 +10,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import BuddyPage from "./pages/BuddyPage";
 import RequestMeetingPage from "./pages/RequestMeetingPage";
 import AcceptMeetingPage from "./pages/AcceptMeetingPage";
+import AudioLocationPage from "./pages/AudioLocationPage";
 
 const LOGIN_ROUTE = "/login";
 
@@ -52,6 +53,7 @@ function App() {
           <Route path="/buddy/:id" element={<BuddyPage />} />
           <Route path="/requestMeeting" element={<RequestMeetingPage />} />
           <Route path="/acceptMeeting/:id" element={<AcceptMeetingPage />} />
+          <Route path="/meeting/:id" element={<AudioLocationPage />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>

@@ -43,7 +43,7 @@ const BuddyPage = () => {
   const [buddyAudio, setBuddyAudio] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [audioLogs, setAudioLogs] = useState([{}]);
-    const [buddyLocation, setBuddyLocation] = useState({
+  const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
   });
@@ -99,8 +99,7 @@ const BuddyPage = () => {
 
     // Listen for audio updates
     socket.on("updateAudio", (newAudioId, audioBuffer) => {
-
-      const blob = new Blob([audioBuffer], { type: 'audio/mp3' }); // Replace 'audio/mp3' with the actual mime type of your audio
+      const blob = new Blob([audioBuffer], { type: "audio/mp3" }); // Replace 'audio/mp3' with the actual mime type of your audio
       const url = URL.createObjectURL(blob);
       setAudioUrl(url);
       setBuddyAudioId(newAudioId);
@@ -112,7 +111,6 @@ const BuddyPage = () => {
       socket.disconnect();
     };
   }, [meetingId]);
-
 
   const handleSubmitReport = () => {
     toast({

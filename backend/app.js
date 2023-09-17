@@ -8,7 +8,7 @@ require("dotenv").config();
 const app = express();
 
 // Import socket handler
-const socketHandler = require('./controllers/socketHandler.js'); // Replace with the actual path to your socketHandler.js
+const socketHandler = require("./controllers/socketHandler.js"); // Replace with the actual path to your socketHandler.js
 
 // Connect to MongoDB
 connectDB();
@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Create an HTTP server instance with your Express app
 const server = http.createServer(app);
-const io = require('socket.io')(server);
+const io = require("socket.io")(server);
 
 // Initialize your socketHandler here
 socketHandler(io);

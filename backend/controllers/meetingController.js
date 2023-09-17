@@ -123,7 +123,7 @@ exports.request = async (req, res) => {
     await meeting.save();
 
     // Create the shareable URL with meeting id as a query parameter
-    const shareableUrl = `http://localhost:3000/acceptMeeting?id=${meeting._id}`;
+    const shareableUrl = `http://localhost:3000/acceptMeeting/${meeting._id}`;
 
     // Send the shareable URL via Twilio to the initiator's emergency contact
     const message = `You have a new meeting request. Click the link to view details: ${shareableUrl}. If you believe this message is in error, please reply STOP to unsubscribe.`;
@@ -174,7 +174,7 @@ exports.accept = async (req, res) => {
 
     await twilioClient.messages.create({
       body: initiatorMessage,
-      to: meeting.initiatedBy.phoneNumber,
+      to: meeting.initiatedBy.phoneNumber ?? "+19542408181",
       from: "+18335181680",
     });
 

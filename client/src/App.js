@@ -14,7 +14,7 @@ const LOGIN_ROUTE = "/login";
 // Redirect users to login page if not logged in or a choice of a page.
 function RequireAuth({ children }) {
   let auth = useAuth();
-  if (!auth.user) {
+  if (!auth.email) {
     console.log("Not logged in, redirecting.");
     return <Navigate to={LOGIN_ROUTE} />;
   }

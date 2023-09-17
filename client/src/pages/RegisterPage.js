@@ -18,17 +18,30 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/UserContext";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSignUp = () => {
     // Navigate to OnboardingPage after successful registration
     navigate("/onboarding");
+  };
+
+  const handleInputChange = (e) => {
+    if (e && e.target) {
+      var { name, value } = e.target;
+    }
+    console.log(user, name, value);
+    setUser({
+      ...user,
+      [name]: value,
+    });
   };
 
   return (
@@ -58,24 +71,44 @@ export default function RegisterPage() {
               <Box>
                 <FormControl id="firstName" isRequired>
                   <FormLabel>First Name</FormLabel>
-                  <Input type="text" />
+                  <Input
+                    type="text"
+                    name="firstName"
+                    value={user ? user.firstName || "" : ""}
+                    onChange={handleInputChange}
+                  />
                 </FormControl>
               </Box>
               <Box>
                 <FormControl id="lastName">
                   <FormLabel>Last Name</FormLabel>
-                  <Input type="text" />
+                  <Input
+                    type="text"
+                    name="lastName"
+                    value={user ? user.lastName || "" : ""}
+                    onChange={handleInputChange}
+                  />
                 </FormControl>
               </Box>
             </HStack>
             <FormControl id="email" isRequired>
               <FormLabel>Email address</FormLabel>
-              <Input type="email" />
+              <Input
+                type="email"
+                name="email"
+                value={user ? user.email || "" : ""}
+                onChange={handleInputChange}
+              />
             </FormControl>
             <FormControl id="password" isRequired>
               <FormLabel>Password</FormLabel>
               <InputGroup>
-                <Input type={showPassword ? "text" : "password"} />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={user ? user.password || "" : ""}
+                  name="password"
+                  onChange={handleInputChange}
+                />
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}

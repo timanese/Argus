@@ -32,7 +32,7 @@ export function UserProvider({ children }) {
     return logoutPromise;
   }
 
-  async function login(username, password) {
+  async function login(email, password) {
     const loginPromise = new Promise(async (resolve, reject) => {
       // logout before logging back in.
       if (sessionStorage.getItem(ACCESS_TOKEN_SESSION_STORAGE) != null) {
@@ -44,7 +44,7 @@ export function UserProvider({ children }) {
       }
       try {
         const res = await axios.post(bp.buildPath("/api/login"), {
-          username: username.toLowerCase(),
+          email: email.toLowerCase(),
           password: password,
         });
         if (res && res.data && res.data.error) {
@@ -85,7 +85,7 @@ export function UserProvider({ children }) {
     user,
     login,
     logout,
-    setUser
+    setUser,
   };
   return (
     <UserContext.Provider value={values}>

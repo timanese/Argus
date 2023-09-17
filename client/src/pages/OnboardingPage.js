@@ -31,8 +31,20 @@ import {
 import { PhoneIcon } from "@chakra-ui/icons";
 
 import { useToast } from "@chakra-ui/react";
+import { useAuth } from "../contexts/UserContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Form1 = () => {
+  const { user, setUser } = useAuth();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
@@ -42,7 +54,13 @@ const Form1 = () => {
         <InputLeftElement pointerEvents="none">
           <PhoneIcon color="gray.300" />
         </InputLeftElement>
-        <Input type="tel" placeholder="Phone number" />
+        <Input
+          type="tel"
+          name="phoneNumber"
+          value={user ? user.phoneNumber || "" : ""}
+          onChange={handleInputChange}
+          placeholder="Phone number"
+        />
       </InputGroup>
     </>
   );
@@ -191,6 +209,19 @@ const Form2 = () => {
 };
 
 const Form3 = () => {
+  const { user, setUser } = useAuth();
+
+  const handleInputChange = (e, i) => {
+    const { name, value } = e.target;
+    if (!user.emergencyContacts) {
+      setUser({ ...user, emergencyContacts: [] });
+    }
+    const updatedContacts = [...(user.emergencyContacts || [])];
+    updatedContacts[i] = { ...(updatedContacts[i] || {}), [name]: value };
+    console.log(user);
+    setUser({ ...user, emergencyContacts: updatedContacts });
+  };
+
   const [value, setValue] = useState(0);
   const handleChange = (value) => setValue(value);
   const components = [];
@@ -200,18 +231,46 @@ const Form3 = () => {
         <Text>{"Emergency Contact " + (i + 1)} </Text>
         <Flex pb={4}>
           <FormControl mr="5%">
-            <Input id="first-name" placeholder="First name" />
+            <Input
+              id="first-name"
+              name="firstName"
+              value={
+                user && user.emergencyContacts && user.emergencyContacts[i]
+                  ? user.emergencyContacts[i].firstName || ""
+                  : ""
+              }
+              onChange={(e) => handleInputChange(e, i)} // Pass index 'i' here
+              placeholder="First name"
+            />
           </FormControl>
 
           <FormControl>
-            <Input id="last-name" placeholder="First name" />
+            <Input
+              id="last-name"
+              name="lastName"
+              value={
+                user && user.emergencyContacts && user.emergencyContacts[i]
+                  ? user.emergencyContacts[i].lastName || ""
+                  : ""
+              }
+              onChange={(e) => handleInputChange(e, i)} // Pass index 'i' here placeholder="First name" />
+            />
           </FormControl>
         </Flex>
         <InputGroup>
           <InputLeftElement pointerEvents="none">
             <PhoneIcon color="gray.300" />
           </InputLeftElement>
-          <Input type="tel" placeholder="Phone number" />
+          <Input
+            type="tel"
+            name="phoneNumber"
+            value={
+              user && user.emergencyContacts && user.emergencyContacts[i]
+                ? user.emergencyContacts[i].phoneNumber || ""
+                : ""
+            }
+            onChange={(e) => handleInputChange(e, i)} // Pass index 'i' here placeholder="Phone number" />
+          />
         </InputGroup>
         <Divider p={1} />
       </div>
@@ -245,6 +304,43 @@ export default function OnboardingPage() {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(33.33);
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const onSubmit = () => {
+    // Data validation can be added here
+    axios
+      .post("http://localhost:3001/api/users/register", user)
+      .then((response) => {
+        // Handle successful registration. Maybe update the user object or redirect to login/dashboard.
+        toast({
+          title: "Account created.",
+          description: "We've created your account for you.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        navigate("/onboarding");
+      })
+      .catch((error) => {
+        // Handle errors
+        let errorMsg = error.message;
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          errorMsg = error.response.data.message;
+        }
+        toast({
+          title: "Account creation failed.",
+          description: errorMsg,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
 
   return (
     <>
@@ -303,15 +399,7 @@ export default function OnboardingPage() {
                 w="7rem"
                 colorScheme="red"
                 variant="solid"
-                onClick={() => {
-                  toast({
-                    title: "Account created.",
-                    description: "We've created your account for you.",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true,
-                  });
-                }}
+                onClick={onSubmit} // <-- Add this line
               >
                 Submit
               </Button>

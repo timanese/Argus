@@ -74,14 +74,13 @@ exports.getAllMeetings = async (req, res) => {
     const { id } = req.params;
     console.log(id);
     const meetings = await Meeting.find({
-      $or: [
-        { initiatedBy: id },
-        { acceptedBy: id }
-      ]
-    }).populate('initiatedBy').populate('acceptedBy'); // Optional: populate to get more user details
+      $or: [{ initiatedBy: id }, { acceptedBy: id }],
+    })
+      .populate("initiatedBy")
+      .populate("acceptedBy"); // Optional: populate to get more user details
 
     if (!meetings || meetings.length === 0) {
-      return res.status(404).json({ msg: 'No meetings found for this user' });
+      return res.status(404).json({ msg: "No meetings found for this user" });
     }
 
     res.status(200).json({ meetings });
@@ -219,7 +218,7 @@ exports.complete = async (req, res) => {
     // Send SMS to inform contacts that parties are safe
     for (const contact of allContacts) {
       await twilioClient.messages.create({
-        body: `Safety Alert: The meeting between ${meeting.initiatedBy.username} and ${meeting.acceptedBy.username} has been safely completed.`,
+        body: `Safety Alert: The meeting between ${meeting.initiatedBy.firstName} and ${meeting.acceptedBy.firstName} has been safely completed.`,
         to: contact.phoneNumber,
         from: "+18449943470",
       });

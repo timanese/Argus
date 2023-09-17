@@ -7,7 +7,8 @@ const { uploadFile } = require("./fileController"); // Import the uploadPicture 
 
 exports.register = async (req, res) => {
   const {
-    username,
+    firstName,
+    lastName,
     email,
     phoneNumber,
     password,
@@ -26,7 +27,8 @@ exports.register = async (req, res) => {
 
     // Create a new user instance
     user = new User({
-      username,
+      firstName,
+      lastName,
       email,
       phoneNumber,
       password,
@@ -57,11 +59,11 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     // Check if the user exists
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: "User does not exist" });
     }

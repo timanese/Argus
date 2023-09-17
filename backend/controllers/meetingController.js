@@ -220,6 +220,7 @@ exports.initiate = async (req, res) => {
     // const shareableId = crypto.randomBytes(16).toString("hex");
     // const shareableLink = `http://localhost:3000/emergency/${shareableId}`;
     const shareableLink = `http://localhost:3000/buddy/${id}`;
+    const initiatedLink = `http://localhost:3000/meeting/${id}`;
 
     // Store the shareableId in the meeting model (You may want to do this)
     // meeting.uniqueId = shareableId;
@@ -241,6 +242,11 @@ exports.initiate = async (req, res) => {
         from: "+18335181680",
       });
     }
+    await twilioClient.messages.create({
+      body: `Hello ${meeting?.initiatedBy?.firstName}, ${meeting?.acceptedBy?.firstName} has initiated the meeting, Please join him by clicking the link below\n ${initiatedLink}. If you believe this message is in error, please reply STOP to unsubscribe.`,
+      to: allContacts[i].phoneNumber,
+      from: "+18335181680",
+    });
 
     res.status(200).json({ msg: "Initialization successful", shareableLink });
   } catch (err) {

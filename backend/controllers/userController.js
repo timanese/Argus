@@ -20,6 +20,7 @@ exports.register = async (req, res) => {
   } = req.body;
 
   try {
+    console.log("registering");
     // Check if the user already exists
     let user = await User.findOne({ email });
     if (user) {

@@ -28,7 +28,8 @@ const io = require('socket.io')(server, {
     origin: "http://localhost:3000",  // replace with your application's origin
     methods: ["GET", "POST"],
     credentials: true  // <-- Add this line
-  }
+  },
+  maxHttpBufferSize: 1e8 // 100 MB
 });
 
 // Initialize your socketHandler here

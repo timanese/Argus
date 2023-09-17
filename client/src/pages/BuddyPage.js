@@ -39,13 +39,15 @@ const BuddyPage = () => {
   const meetingId = id;
   // Initialize Socket.io
   const socket = io("http://localhost:3001"); // Replace with your server URL
-  const [selectedAudio, setSelectedAudio] = useState(null);
-  const [gpsLogs, setGpsLogs] = useState([]);
-  const [audioLogs, setAudioLogs] = useState([]);
-  const [buddyLocation, setBuddyLocation] = useState({
+  const [buddyAudioId, setBuddyAudioId] = useState("");
+  const [buddyAudio, setBuddyAudio] = useState(null);
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioLogs, setAudioLogs] = useState([{}]);
+    const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
   });
+  const [gpsLogs, setGpsLogs] = useState({});
 
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const { isLoaded, loadError } = useJsApiLoader({
@@ -58,62 +60,59 @@ const BuddyPage = () => {
 
   // Extract the meeting ID from the query parameters
   const searchParams = new URLSearchParams(location.search);
-  // const meetingId = searchParams.get("meetingId");
-  // const meetingId = "65067d2226e9c544996f193e";
 
   useEffect(() => {
-      // Initialize Socket.io
-      const socket = io("http://localhost:3001", {
-        withCredentials: true,
-      });
+    const socket = io("http://localhost:3001", {
+      withCredentials: true,
+    });
 
-      // Fetch the meeting by its ID
-      const fetchMeeting = async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3001/api/meetings/${meetingId}`
-          );
-          const meetingData = response.data;
-          setMeeting(meetingData);
-          setGpsLogs(meetingData.gpsLogs || []);
-          setAudioLogs(meetingData.audioLogs || []);
-
-          // Set the buddy location based on the last log in gpsLogs
-          if (meetingData.gpsLogs && meetingData.gpsLogs.length > 0) {
-            setBuddyLocation(meetingData.gpsLogs[meetingData.gpsLogs.length - 1]);
-          }
-
-          // Join the room
-          socket.emit("joinRoom", meetingId);
-
-          console.log("JOINED ROOM");
-
-          // Listen for location updates
-          socket.on("updateLocation", (newLocation) => {
-            setBuddyLocation(newLocation);
-          });
-
-          // Listen for audio updates
-          socket.on("updateAudio", (newAudioId) => {
-            // Fetch the new audio file by its ID and update the state
-            // setAudioLogs([...audioLogs, newAudio]);
-          });
-
-          // Sleep for 5 seconds
-          await new Promise((resolve) => setTimeout(resolve, 1));
-
-        } catch (error) {
-          console.error("Error fetching the meeting:", error);
+    const fetchMeeting = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/meetings/${meetingId}`
+        );
+        const meetingData = response.data;
+        setMeeting(meetingData);
+        setGpsLogs(meetingData.gpsLogs || []);
+        setAudioLogs(meetingData.audioLogs || []);
+        if (meetingData.gpsLogs && meetingData.gpsLogs.length > 0) {
+          setBuddyLocation(meetingData.gpsLogs[meetingData.gpsLogs.length - 1]);
         }
-      };
+      } catch (error) {
+        console.error("Error fetching the meeting:", error);
+      }
+    };
 
-      fetchMeeting();
+    // Fetch meeting data
+    fetchMeeting();
 
-      // Cleanup
-      return () => {
-        socket.disconnect();
-      };
-    }, [meetingId]);
+    // Join the room
+    socket.emit("joinRoom", meetingId);
+
+    // Listen for location updates
+    socket.on("updateLocation", (newLocation, roomGPSLogs) => {
+      setBuddyLocation(newLocation);
+      setGpsLogs(roomGPSLogs);
+      console.log("Received location:", newLocation);
+      console.log("Room GPS Logs:", roomGPSLogs);
+    });
+
+    // Listen for audio updates
+    socket.on("updateAudio", (newAudioId, audioBuffer) => {
+
+      const blob = new Blob([audioBuffer], { type: 'audio/mp3' }); // Replace 'audio/mp3' with the actual mime type of your audio
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+      setBuddyAudioId(newAudioId);
+      setBuddyAudio(audioBuffer);
+    });
+
+    // Cleanup
+    return () => {
+      socket.disconnect();
+    };
+  }, [meetingId]);
+
 
   const handleSubmitReport = () => {
     toast({
@@ -125,13 +124,13 @@ const BuddyPage = () => {
     });
     closeReportModal();
   };
-  const handleAudioSelection = (event) => {
-    const selectedId = event.target.value;
-    const selected = audioLogs.find(
-      (audio) => audio.id === parseInt(selectedId)
-    );
-    setSelectedAudio(selected);
-  };
+  // const handleAudioSelection = (event) => {
+  //   const selectedId = event.target.value;
+  //   const selected = audioLogs.find(
+  //     (audio) => audio.id === parseInt(selectedId)
+  //   );
+  //   setSelectedAudio(selected);
+  // };
 
   const openReportModal = () => setReportModalOpen(true);
   const closeReportModal = () => setReportModalOpen(false);
@@ -200,18 +199,19 @@ const BuddyPage = () => {
       </Modal>
 
       {/* Dropdown of Archived Audio Players with Timestamps */}
-      <div id="archivedAudioPlayers">
+      {/* <div id="archivedAudioPlayers">
         <Select
           placeholder="Select archived audio"
-          onChange={handleAudioSelection}
+          // onChange={handleAudioSelection}
         >
-          {audioLogs.map((audio) => (
-            <option key={audio.id} value={audio.id}>
-              {audio.name}
-            </option>
-          ))}
+        {audioLogs && typeof audioLogs === 'object' && Object.keys(audioLogs).map((key) => (
+  <option key={key} value={key}>
+    {audioLogs[key].name}
+  </option>
+))}
+
         </Select>
-      </div>
+      </div> */}
 
       {/* Audio Player */}
       <div
@@ -223,11 +223,11 @@ const BuddyPage = () => {
           justifyContent: "center",
         }}
       >
-        {selectedAudio && (
+        {audioUrl !== "" && (
           <AudioPlayer
-            style={{ width: "80%" }} // inline style for width
+            style={{ width: "30%" }} // inline style for width
             autoPlay={false}
-            src={selectedAudio.url}
+            src={audioUrl}
           />
         )}
       </div>

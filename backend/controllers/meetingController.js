@@ -4,12 +4,12 @@ const User = require("../models/User");
 const twilioClient = require("../config/twilio");
 
 // General-purpose function to upload GPS data
-const uploadGPSData = async (meetingId, gpsLog) => {
+exports.uploadGPSData = async (meetingId, gpsLog) => {
   try {
     const meeting = await Meeting.findById(meetingId);
     if (!meeting) {
       console.error("Meeting not found");
-      return;
+      return false;
     }
 
     // Add the GPS log to the gpsLogs array
@@ -17,8 +17,10 @@ const uploadGPSData = async (meetingId, gpsLog) => {
 
     await meeting.save();
     console.log("GPS log added successfully");
+    return true;
   } catch (err) {
     console.error(err);
+    return false;
   }
 };
 
@@ -37,12 +39,12 @@ exports.uploadGPS = async (req, res) => {
 };
 
 // General-purpose function to upload audio data
-const uploadAudioData = async (meetingId, fileId) => {
+exports.uploadAudioData = async (meetingId, fileId) => {
   try {
     const meeting = await Meeting.findById(meetingId);
     if (!meeting) {
       console.error("Meeting not found");
-      return;
+      return false;
     }
 
     // Add the audio file ID to the audioLogs array
@@ -50,8 +52,10 @@ const uploadAudioData = async (meetingId, fileId) => {
 
     await meeting.save();
     console.log("Audio successfully added");
+    return true;
   } catch (err) {
     console.error(err);
+    return false;
   }
 };
 
@@ -165,24 +169,27 @@ exports.accept = async (req, res) => {
     }
 
     // Update the meeting
-    meeting.acceptedBy = acceptedBy;
-    meeting.acceptedByEmergencyContact = acceptedByEmergencyContact;
-    meeting.status = "ongoing";
+    let acceptedByUser = await User.findById(acceptedBy);
+    // This assumes that emergencyContacts is an array of objects and each object has an '_id' property
+    let acceptedByEmergencyContactUser = await User.findById(
+      acceptedByEmergencyContact
+    );
+
+    meeting.status = "Ongoing";
 
     // Message to be sent to the initiator of the meeting
-    const initiatorMessage = `Your meeting request has been accepted by ${acceptedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
-
+    const initiatorMessage = `Your meeting request has been accepted by ${acceptedByUser.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
     await twilioClient.messages.create({
       body: initiatorMessage,
       to: meeting.initiatedBy.phoneNumber ?? "+19542408181",
       from: "+18335181680",
     });
 
-    const acceptedByEmergencyContactMessage = `Hello ${acceptedByEmergencyContact.firstName}, this message is to notify you that your friend ${acceptedBy.firstName} has accepted a meeting request from ${meeting.initiatedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
+    const acceptedByEmergencyContactMessage = `Hello ${acceptedByEmergencyContactUser.firstName}, this message is to notify you that your friend ${acceptedByUser.firstName} has accepted a meeting request from ${meeting.initiatedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
 
     await twilioClient.messages.create({
       body: acceptedByEmergencyContactMessage,
-      to: acceptedByEmergencyContact.phoneNumber,
+      to: acceptedByEmergencyContactUser.phoneNumber,
       from: "+18335181680",
     });
 
@@ -287,3 +294,10 @@ exports.getMeetingById = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+// console.log(uploadGPSData);
+
+// module.exports = {
+//   uploadGPSData,
+//   // ... (other exported functions)
+// };

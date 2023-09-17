@@ -1,8 +1,9 @@
 const server = require("./../app.js"); // Replace with the actual path to your app.js
 const { uploadFile } = require("./fileController"); // Import uploadFile function
-const { uploadGPS, uploadAudio } = require("./meetingController"); // Import uploadGPS function
+const { uploadGPSData, uploadAudioData } = require("./meetingController"); // Import uploadGPS function
 const roomGPSLogs = {}; // Store locations by room ID
-const roomAudioFiles = {}; // Store audio file IDs for each room
+const roomAudioFileIds = {}; // Store audio file IDs for each room
+const roomAudioFiles = {}; // Store audio files for each room
 
 module.exports = function (io) {
     io.on('connection', (socket) => {
@@ -18,10 +19,8 @@ module.exports = function (io) {
             roomAudioFiles[roomId] = roomAudioFiles[roomId] || [];
         });
 
-        // Listen for location updates from the user client
+       // Listen for location updates from the user client
         socket.on('sendLocation', async ({ roomId, location, meetingId }) => {
-            console.log('Received location:', location);
-
             // Store this location in the room's location list
             if (!roomGPSLogs[roomId]) {
                 roomGPSLogs[roomId] = [];
@@ -29,22 +28,30 @@ module.exports = function (io) {
             roomGPSLogs[roomId].push(location);
 
             // Upload this location to the database
-            await uploadGPSData(meetingId, location);
+            const success = await uploadGPSData(meetingId, location);
 
-            // Broadcast this location to the emergency client in the same room
-            io.to(roomId).emit('updateLocation', location);
+            if (success) {
+                // Broadcast this location to the emergency client in the same room
+                io.to(roomId).emit('updateLocation', location, roomGPSLogs[roomId]);
+            } else {
+                console.error("Failed to upload GPS data");
+            }
         });
 
         // When a user sends a new audio file
         socket.on('sendAudio', async ({ roomId, audioBuffer, meetingId }) => {
             const audioFileId = await uploadFile(audioBuffer); // Assuming uploadFile is your function to upload the audio buffer and get an ID
-            roomAudioFiles[roomId].push(audioFileId);
+            // roomAudioFileIds[roomId].push(audioFileId);
 
-            // Upload this audio to the database
-            await uploadAudioData(meetingId, audioFileId);
+             // Upload this location to the database
+            const success = await uploadAudioData(meetingId, audioFileId);
 
-            // Broadcast the new audio file ID to the room
-            io.to(roomId).emit('updateAudio', audioFileId);
+            if (success) {
+                // Broadcast this location to the emergency client in the same room
+                io.to(roomId).emit('updateAudio', audioFileId, audioBuffer);
+            } else {
+                console.error("Failed to upload GPS data");
+            }
         });
 
         // When an emergency contact joins late and requests past GPS logs

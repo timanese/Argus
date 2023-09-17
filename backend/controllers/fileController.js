@@ -1,5 +1,5 @@
 const multer = require("multer");
-const MongoClient = require("mongodb").MongoClient;
+// const MongoClient = require("mongodb").MongoClient;
 const { GridFsStorage } = require("multer-gridfs-storage");
 const {ObjectId}  = require("mongodb");
 const dotenv = require("dotenv").config();
@@ -23,77 +23,59 @@ const fileStorage = new GridFsStorage({
 
 const upload = multer({ storage: fileStorage });
 
-exports.uploadFile = (req, res) => {
-  upload.array("files")(req, res, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Error uploading files" });
-    }
-    // console.log(req.files.map((file) => file.id));
-    res.status(200).send({ message: "File uploaded", files: req.files, fileIds: req.files.map((file) => file.id) });
-  });
-};
+const { MongoClient, GridFSBucket } = require('mongodb');
 
-exports.pushFile = async (req, res) => {
-  try {
-    const { body } = req;
-    const caseID = req.params.caseID;
-    const fileIds = body.fileIds; // Assuming fileIds is an array of fileId strings
-
-    // Add 'await' to the function call and use $each modifier
-    const updatedCase = await Case.findByIdAndUpdate(
-      new ObjectId(caseID),
-      {
-        $push: { fileIds: { $each: fileIds } },
-      },
-      { new: true } // Return the updated document
-    );
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        case: updatedCase,
-      },
+exports.uploadFile = async (buffer, filename) => {
+    const client = await MongoClient.connect(process.env.MONGO_URI);
+    const db = client.db('Argus');
+    const bucket = new GridFSBucket(db, {
+      bucketName: 'files'
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err,
-    });
-  }
-};
 
-/////////////////////////////
-// FILE HANDLING           //
-/////////////////////////////
+  const uploadStream = bucket.openUploadStream(filename);
+  const id = uploadStream.id;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./"); // Set the destination folder for uploaded files
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname); // Set the file name to be saved
-  },
-});
-
-const uploadFiles = multer({ storage: storage });
-
-exports.getFileAsPlainText = async (req, res) => {
-  var plainTextList = [];
-
-  uploadFiles.array("files")(req, res, async (err) => {
-    if (err) {
-      res.status(400).send("Error processing files: " + err.message);
+  uploadStream.write(buffer, (error) => {
+    if (error) {
+      console.error('Error writing to GridFS', error);
+      client.close();
       return;
     }
-    const files = req.files;
-    console.log(files);
-    const processingPromises = files.map(async (file) => {
-      return await processFile(file);
-    });
 
-    plainTextList = await Promise.all(processingPromises);
-    res.json({ plainTextList });
+    uploadStream.end(() => {
+      console.log('File uploaded successfully');
+      client.close();
+    });
   });
+
+  return id;
 };
 
+exports.getFileById = async (fileId) => {
+  const client = await MongoClient.connect(process.env.MONGO_URI);
+  const db = client.db('Argus');
+  const bucket = new GridFSBucket(db, {
+    bucketName: 'files'
+  });
+
+  const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
+  let chunks = [];
+
+  return new Promise((resolve, reject) => {
+    downloadStream.on('data', (chunk) => {
+      chunks.push(chunk);
+    });
+
+    downloadStream.on('error', (error) => {
+      console.error('Error fetching file:', error);
+      client.close();
+      reject(error);
+    });
+
+    downloadStream.on('end', () => {
+      const buffer = Buffer.concat(chunks);
+      client.close();
+      resolve(buffer);
+    });
+  });
+};

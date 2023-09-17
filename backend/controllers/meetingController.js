@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const Meeting = require("../models/Meeting");
 const User = require("../models/User");
-const twilioClient = require("../__tests__/config/twilio");
+const twilioClient = require("../config/twilio");
 
 // General-purpose function to upload GPS data
 const uploadGPSData = async (meetingId, gpsLog) => {

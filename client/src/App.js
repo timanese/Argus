@@ -50,7 +50,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path={LOGIN_ROUTE} element={<LoginPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/buddy" element={<BuddyPage />} />
+          <Route path="/buddy/:id" element={<BuddyPage />} />
           <Route path="/requestMeeting" element={<RequestMeetingPage />} />
           <Route path="/acceptMeeting/:id" element={<AcceptMeetingPage />} />
         </Routes>

@@ -11,7 +11,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useAuth } from "../contexts/UserContext";
+import { getUser, useAuth } from "../contexts/UserContext";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { AddIcon } from "@chakra-ui/icons"; // Import the AddIcon
@@ -33,7 +33,8 @@ const initiateMeeting = (meetingId) => {
 };
 
 function StatsCard(props) {
-  const { key, meeting, meetingTitle, startTime, location, level, status } = props;
+  const { key, meeting, meetingTitle, startTime, location, level, status } =
+    props;
 
   return (
     <Flex
@@ -145,7 +146,7 @@ function StatsCard(props) {
 // }
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const user = getUser();
   const [meetings, setMeetings] = useState([]);
   const [currentMeetings, setCurrentMeetings] = useState([]);
   const [previousMeetings, setPreviousMeetings] = useState([]);

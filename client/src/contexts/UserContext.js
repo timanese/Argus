@@ -12,7 +12,6 @@ export function useAuth() {
 
 export function getUser() {
   let user = localStorage.getItem(USER_SESSION_STORAGE);
-  console.log("user", user);
   if (user) {
     return JSON.parse(user);
   } else {

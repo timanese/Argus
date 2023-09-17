@@ -16,6 +16,7 @@ import { getUser, useAuth } from "../contexts/UserContext";
 import CreateContactModal from "../components/CreateContactModal";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 import NavBar from "../components/NavBar";
+var bp = require("../Path.js");
 
 const SelectEmergencyContact = ({
   selectedContact,
@@ -29,7 +30,7 @@ const SelectEmergencyContact = ({
   const createNewContact = (newContact) => {
     axios
       .put(
-        `http://localhost:3001/api/users/${userId}/emergencyContact`,
+        bp.buildPath(`/api/users/${userId}/emergencyContact`),
         newContact
       )
       .then((res) => {
@@ -100,7 +101,7 @@ const AcceptMeetingPage = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/users/${user._id}/emergencyContacts`)
+      .get(bp.buildPath(`/api/users/${user._id}/emergencyContacts`))
       .then((res) => {
         setEmergencyContacts(res.data);
       })
@@ -109,7 +110,7 @@ const AcceptMeetingPage = () => {
       });
     axios
       .get(
-        `http://localhost:3001/api/meetings/${id ?? "65061a1021811cb7732c20e2"}`
+        bp.buildPath(`/api/meetings/${id ?? "65061a1021811cb7732c20e2"}`)
       )
       .then((response) => {
         console.log(response.data);
@@ -125,7 +126,7 @@ const AcceptMeetingPage = () => {
     console.log(user._id, selectedContact);
     axios
       .put(
-        `http://localhost:3001/api/meetings/${id}/accept`,
+        bp.buildPath(`/api/meetings/${id}/accept`),
         {
           acceptedBy: user._id,
           acceptedByEmergencyContact: selectedContact,

@@ -51,7 +51,7 @@ function App() {
           <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/buddy" element={<BuddyPage />} />
           <Route path="/requestMeeting" element={<RequestMeetingPage />} />
-          <Route path="/acceptMeeting" element={<AcceptMeetingPage />} />
+          <Route path="/acceptMeeting/:id" element={<AcceptMeetingPage />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>

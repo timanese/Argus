@@ -94,7 +94,8 @@ export default function LoginPage() {
                   bg: "blue.500",
                 }}
               >
-                Sign in
+                <Text>Sign in</Text>
+              <Spinner display={loading ? "inline" : "none"} ml={1}/>
               </Button>
             </Stack>
             <Stack

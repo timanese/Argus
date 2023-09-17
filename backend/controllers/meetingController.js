@@ -91,7 +91,14 @@ exports.getAllMeetings = async (req, res) => {
 };
 
 exports.request = async (req, res) => {
-  const { meetingTitle, level, initiatedBy, initiatedByEmergencyContact, location, startTime } = req.body;
+  const {
+    meetingTitle,
+    level,
+    initiatedBy,
+    initiatedByEmergencyContact,
+    location,
+    startTime,
+  } = req.body;
 
   try {
     // Generate a unique identifier for the shareable URL
@@ -180,14 +187,17 @@ exports.initiate = async (req, res) => {
     meeting.uniqueId = shareableId;
     await meeting.save();
 
-    const allContacts = [meeting.initiatedByEmergencyContact, meeting.acceptedByEmergencyContact];
+    const allContacts = [
+      meeting.initiatedByEmergencyContact,
+      meeting.acceptedByEmergencyContact,
+    ];
     const allUsers = [meeting.initiatedBy, meeting.acceptedBy];
 
     // Send SMS
     for (let i = 0; i < allContacts.length; i++) {
       await twilioClient.messages.create({
-        body: `Hello ${allContacts[i].username}, this is an Argus request from your friend ${allUsers[i].username}. If you believe this message is in error, please reply STOP to unsubscribe.\
-        \n${allUsers[i].username} is scheduled to meet at ${meeting.location} at ${meeting.startTime}. Please click on \
+        body: `Hello ${allContacts[i].firstName}, this is an Argus request from your friend ${allUsers[i].firstName}. If you believe this message is in error, please reply STOP to unsubscribe.\
+        \n${allUsers[i].firstName} is scheduled to meet at ${meeting.location} at ${meeting.startTime}. Please click on \
         \nthe link below to follow their meetup and keep an eye on their safety.\n${shareableLink}`,
         to: allContacts[i].phoneNumber,
         from: "+18335181680",

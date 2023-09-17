@@ -23,10 +23,6 @@ const MeetingSchema = new mongoose.Schema({
     ref: "User",
   },
   location: { type: String, required: true },
-  location: {
-    lat: { type: String },
-    long: { type: String },
-  },
   startTime: { type: Date, required: true },
   endTime: { type: Date },
   status: {

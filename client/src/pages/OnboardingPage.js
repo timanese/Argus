@@ -320,7 +320,7 @@ export default function OnboardingPage() {
           duration: 3000,
           isClosable: true,
         });
-        navigate("/onboarding");
+        navigate("/");
       })
       .catch((error) => {
         // Handle errors

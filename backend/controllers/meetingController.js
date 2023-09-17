@@ -39,12 +39,12 @@ exports.uploadGPS = async (req, res) => {
 };
 
 // General-purpose function to upload audio data
-const uploadAudioData = async (meetingId, fileId) => {
+exports.uploadAudioData = async (meetingId, fileId) => {
   try {
     const meeting = await Meeting.findById(meetingId);
     if (!meeting) {
       console.error("Meeting not found");
-      return;
+      return false;
     }
 
     // Add the audio file ID to the audioLogs array
@@ -52,8 +52,10 @@ const uploadAudioData = async (meetingId, fileId) => {
 
     await meeting.save();
     console.log("Audio successfully added");
+    return true;
   } catch (err) {
     console.error(err);
+    return false;
   }
 };
 

@@ -49,68 +49,33 @@ exports.uploadFile = async (buffer, filename) => {
   });
 
   return id;
-}
-
-exports.pushFile = async (req, res) => {
-  try {
-    const { body } = req;
-    const caseID = req.params.caseID;
-    const fileIds = body.fileIds; // Assuming fileIds is an array of fileId strings
-
-    // Add 'await' to the function call and use $each modifier
-    const updatedCase = await Case.findByIdAndUpdate(
-      new ObjectId(caseID),
-      {
-        $push: { fileIds: { $each: fileIds } },
-      },
-      { new: true } // Return the updated document
-    );
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        case: updatedCase,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err,
-    });
-  }
 };
 
-/////////////////////////////
-// FILE HANDLING           //
-/////////////////////////////
+exports.getFileById = async (fileId) => {
+  const client = await MongoClient.connect(process.env.MONGO_URI);
+  const db = client.db('Argus');
+  const bucket = new GridFSBucket(db, {
+    bucketName: 'files'
+  });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./"); // Set the destination folder for uploaded files
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname); // Set the file name to be saved
-  },
-});
+  const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
+  let chunks = [];
 
-const uploadFiles = multer({ storage: storage });
-
-exports.getFileAsPlainText = async (req, res) => {
-  var plainTextList = [];
-
-  uploadFiles.array("files")(req, res, async (err) => {
-    if (err) {
-      res.status(400).send("Error processing files: " + err.message);
-      return;
-    }
-    const files = req.files;
-    console.log(files);
-    const processingPromises = files.map(async (file) => {
-      return await processFile(file);
+  return new Promise((resolve, reject) => {
+    downloadStream.on('data', (chunk) => {
+      chunks.push(chunk);
     });
 
-    plainTextList = await Promise.all(processingPromises);
-    res.json({ plainTextList });
+    downloadStream.on('error', (error) => {
+      console.error('Error fetching file:', error);
+      client.close();
+      reject(error);
+    });
+
+    downloadStream.on('end', () => {
+      const buffer = Buffer.concat(chunks);
+      client.close();
+      resolve(buffer);
+    });
   });
 };
-

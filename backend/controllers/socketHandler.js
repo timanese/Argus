@@ -1,8 +1,9 @@
 const server = require("./../app.js"); // Replace with the actual path to your app.js
 const { uploadFile } = require("./fileController"); // Import uploadFile function
-const { uploadGPSData } = require("./meetingController"); // Import uploadGPS function
+const { uploadGPSData, uploadAudioData } = require("./meetingController"); // Import uploadGPS function
 const roomGPSLogs = {}; // Store locations by room ID
-const roomAudioFiles = {}; // Store audio file IDs for each room
+const roomAudioFileIds = {}; // Store audio file IDs for each room
+const roomAudioFiles = {}; // Store audio files for each room
 
 module.exports = function (io) {
     io.on('connection', (socket) => {
@@ -40,10 +41,17 @@ module.exports = function (io) {
         // When a user sends a new audio file
         socket.on('sendAudio', async ({ roomId, audioBuffer, meetingId }) => {
             const audioFileId = await uploadFile(audioBuffer); // Assuming uploadFile is your function to upload the audio buffer and get an ID
-            roomAudioFiles[roomId].push(audioFileId);
+            // roomAudioFileIds[roomId].push(audioFileId);
 
-            // Broadcast the new audio file ID to the room
-            io.to(roomId).emit('updateAudio', audioFileId);
+             // Upload this location to the database
+            const success = await uploadAudioData(meetingId, audioFileId);
+
+            if (success) {
+                // Broadcast this location to the emergency client in the same room
+                io.to(roomId).emit('updateAudio', audioFileId, audioBuffer);
+            } else {
+                console.error("Failed to upload GPS data");
+            }
         });
 
         // When an emergency contact joins late and requests past GPS logs

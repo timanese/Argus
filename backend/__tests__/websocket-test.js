@@ -25,23 +25,23 @@ socket.on('connect', () => {
 
   console.log("Sending location");
 
-    // Read an audio file into a buffer
-  fs.readFile('./../../../alex-productions-walking-home.mp3', (err, buffer) => {
-    if (err) {
-      console.error('Error reading the file:', err);
-      return;
-    }
-    // const base64Audio = buffer.toString('base64');
-    // console.log("Sending audio" + base64Audio);
-    // Send the audio buffer
-    socket.emit('sendAudio', {
-      roomId: '65069bdd605bc189823b62ff',
-      meetingId: '65069bdd605bc189823b62ff',
-      audioBuffer: buffer
-    }, () => {
-      console.log('Server acknowledged sendAudio');
-    });
-  });
+  //   // Read an audio file into a buffer
+  // fs.readFile('./../../../alex-productions-walking-home.mp3', (err, buffer) => {
+  //   if (err) {
+  //     console.error('Error reading the file:', err);
+  //     return;
+  //   }
+  //   // const base64Audio = buffer.toString('base64');
+  //   // console.log("Sending audio" + base64Audio);
+  //   // Send the audio buffer
+  //   socket.emit('sendAudio', {
+  //     roomId: '65069bdd605bc189823b62ff',
+  //     meetingId: '65069bdd605bc189823b62ff',
+  //     audioBuffer: buffer
+  //   }, () => {
+  //     console.log('Server acknowledged sendAudio');
+  //   });
+  // });
 
   // Comment this out for now
   // socket.disconnect();

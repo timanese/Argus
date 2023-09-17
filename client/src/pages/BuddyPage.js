@@ -40,7 +40,9 @@ const BuddyPage = () => {
   // Initialize Socket.io
   const socket = io("http://localhost:3001"); // Replace with your server URL
   const [buddyAudioId, setBuddyAudioId] = useState("");
-  const [audioLogs, setAudioLogs] = useState([]);
+  const [buddyAudio, setBuddyAudio] = useState(null);
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioLogs, setAudioLogs] = useState([{}]);
     const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
@@ -96,11 +98,13 @@ const BuddyPage = () => {
     });
 
     // Listen for audio updates
-    socket.on("updateAudio", (newAudioId, roomAudioLogs) => {
+    socket.on("updateAudio", (newAudioId, audioBuffer) => {
+
+      const blob = new Blob([audioBuffer], { type: 'audio/mp3' }); // Replace 'audio/mp3' with the actual mime type of your audio
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
       setBuddyAudioId(newAudioId);
-      setAudioLogs(roomAudioLogs);
-      console.log("Received audioId:", newAudioId);
-      console.log("Room Audio Logs:", roomAudioLogs);
+      setBuddyAudio(audioBuffer);
     });
 
     // Cleanup
@@ -120,13 +124,13 @@ const BuddyPage = () => {
     });
     closeReportModal();
   };
-  const handleAudioSelection = (event) => {
-    const selectedId = event.target.value;
-    const selected = audioLogs.find(
-      (audio) => audio.id === parseInt(selectedId)
-    );
-    setSelectedAudio(selected);
-  };
+  // const handleAudioSelection = (event) => {
+  //   const selectedId = event.target.value;
+  //   const selected = audioLogs.find(
+  //     (audio) => audio.id === parseInt(selectedId)
+  //   );
+  //   setSelectedAudio(selected);
+  // };
 
   const openReportModal = () => setReportModalOpen(true);
   const closeReportModal = () => setReportModalOpen(false);
@@ -195,18 +199,19 @@ const BuddyPage = () => {
       </Modal>
 
       {/* Dropdown of Archived Audio Players with Timestamps */}
-      <div id="archivedAudioPlayers">
+      {/* <div id="archivedAudioPlayers">
         <Select
           placeholder="Select archived audio"
-          onChange={handleAudioSelection}
+          // onChange={handleAudioSelection}
         >
-          {audioLogs.map((audio) => (
-            <option key={audio.id} value={audio.id}>
-              {audio.name}
-            </option>
-          ))}
+        {audioLogs && typeof audioLogs === 'object' && Object.keys(audioLogs).map((key) => (
+  <option key={key} value={key}>
+    {audioLogs[key].name}
+  </option>
+))}
+
         </Select>
-      </div>
+      </div> */}
 
       {/* Audio Player */}
       <div
@@ -218,11 +223,11 @@ const BuddyPage = () => {
           justifyContent: "center",
         }}
       >
-        {selectedAudio && (
+        {audioUrl !== "" && (
           <AudioPlayer
-            style={{ width: "80%" }} // inline style for width
+            style={{ width: "30%" }} // inline style for width
             autoPlay={false}
-            src={selectedAudio.url}
+            src={audioUrl}
           />
         )}
       </div>

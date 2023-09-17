@@ -4,7 +4,7 @@ const connectDB = require("./config/db");
 const http = require("http");
 const path = require("path");
 require("dotenv").config();
-
+var bp = require("./Path.js");
 // Initialize Express app
 const app = express();
 
@@ -16,7 +16,7 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',  // replace with your application's origin
+  origin: bp.buildPath(""),  // replace with your application's origin
   credentials: true  // <-- Add this line
 }));
 app.use(express.urlencoded({ extended: true }));
@@ -26,7 +26,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: "http://localhost:3000",  // replace with your application's origin
+    origin: bp.buildPath(""),  // replace with your application's origin
     methods: ["GET", "POST"],
     credentials: true  // <-- Add this line
   },

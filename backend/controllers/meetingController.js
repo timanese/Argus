@@ -127,7 +127,7 @@ exports.request = async (req, res) => {
     await meeting.save();
 
     // Create the shareable URL with meeting id as a query parameter
-    const shareableUrl = `http://localhost:3000/acceptMeeting/${meeting._id}`;
+    const shareableUrl = bp.buildPath(`/acceptMeeting/${meeting._id}`);
 
     // Send the shareable URL via Twilio to the initiator's emergency contact
     const message = `You have a new meeting request. Click the link to view details: ${shareableUrl}. If you believe this message is in error, please reply STOP to unsubscribe.`;
@@ -219,8 +219,9 @@ exports.initiate = async (req, res) => {
 
     // const shareableId = crypto.randomBytes(16).toString("hex");
     // const shareableLink = `http://localhost:3000/emergency/${shareableId}`;
-    const shareableLink = `http://localhost:3000/buddy/${id}`;
-    const initiatedLink = `http://localhost:3000/meeting/${id}`;
+
+    const shareableLink = bp.buildPath(`/buddy/${id}`);
+    const initiatedLink = bp.buildPath(`/meeting/${id}`);
 
     // Store the shareableId in the meeting model (You may want to do this)
     // meeting.uniqueId = shareableId;

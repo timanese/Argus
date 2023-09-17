@@ -47,7 +47,7 @@ export default function RequestMeetingPage() {
         initiatedBy: user._id,
         initiatedByEmergencyContact: selectedContact,
         phoneNumber: phoneNumber,
-        location: location,
+        location: location, // Replace with actual location
         startTime: timeDate,
       })
       .then((response) => {

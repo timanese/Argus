@@ -208,8 +208,9 @@ exports.initiate = async (req, res) => {
 
     if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
 
-    const shareableId = crypto.randomBytes(16).toString("hex");
-    const shareableLink = `http://localhost:3000/emergency/${shareableId}`;
+    // const shareableId = crypto.randomBytes(16).toString("hex");
+    // const shareableLink = `http://localhost:3000/emergency/${shareableId}`;
+    const shareableLink = `http://localhost:3000/emergency/${id}`;
 
     // Store the shareableId in the meeting model (You may want to do this)
     meeting.uniqueId = shareableId;

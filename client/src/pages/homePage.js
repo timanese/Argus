@@ -145,8 +145,8 @@ export default function HomePage() {
 
   useEffect(() => {
     // Filter meetings into 'current' and 'previous' based on their 'status'
-    const current = meetings.filter((meeting) => meeting.status !== "completed");
-    const previous = meetings.filter((meeting) => meeting.status === "completed");
+    const current = meetings.filter((meeting) => meeting.status !== "Completed");
+    const previous = meetings.filter((meeting) => meeting.status === "Completed");
 
     setCurrentMeetings(current);
     setPreviousMeetings(previous);
@@ -178,12 +178,16 @@ export default function HomePage() {
           </SimpleGrid>
         </TabPanel>
         <TabPanel>
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 5, lg: 8 }}>
+           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 5, lg: 8 }}>
             {previousMeetings.map((meeting, index) => (
               <StatsCard
                 key={index}
+                meetingTitle={meeting.meetingTitle} // Replace with the actual field name
                 name={meeting.initiatedBy.name} // Replace with the actual field name
                 location={meeting.location}
+                startTime={meeting.startTime}
+                level={meeting.level}
+                status={meeting.status}
               />
             ))}
           </SimpleGrid>
@@ -195,7 +199,6 @@ export default function HomePage() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         />
-        {/* Step 3 */}
         <IconButton
           icon={<AddIcon />}
           isRound

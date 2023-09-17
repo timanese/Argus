@@ -1,8 +1,9 @@
 import React, { useEffect, setState, useState } from "react";
 import useMediaRecorder from "./useMediaRecorder";
 import io from "socket.io-client";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AudioPlayer from "react-h5-audio-player";
+import axios from "axios";
 import {
   Button,
   Box,
@@ -15,6 +16,7 @@ import {
 function AudioLocationPage() {
   const [audioUrl, setAudioUrl] = useState("");
   const { id: roomId } = useParams();
+  const navigate = useNavigate();
   const { stream, isRecording, startRecording, stopRecording, getRecording } =
     useMediaRecorder();
   const socket = io("http://localhost:3001"); // Replace with your server URL
@@ -57,20 +59,37 @@ function AudioLocationPage() {
       stopRecording();
     };
   }, []);
-  const handleEndMeeting = () => {
-    stopRecording();
-    const audioURL = getRecording();
-    console.log(audioURL);
+const handleEndMeeting = () => {
+  stopRecording();
+  const audioBlob = getRecording(); // Assuming this returns a Blob
+  console.log(audioBlob);
 
-    if (audioURL) {
-      const url = URL.createObjectURL(audioURL);
-      setAudioUrl(url);
-      // Send the audio URL or data to the server
-      socket.emit("sendAudio", { roomId, audioBuffer: audioURL });
-    }
+  if (audioBlob) {
+    const reader = new FileReader();
+    reader.onloadend = function(event) {
+      if (event.target.readyState === FileReader.DONE) {
+        const audioBuffer = event.target.result; // This is an ArrayBuffer
 
-    // Perform any other actions needed to end the meeting
-  };
+        // Send the audio buffer to the server
+        socket.emit("sendAudio", { roomId, audioBuffer, roomId });
+
+        // Call complete meeting API
+        axios
+          .put(`http://localhost:3001/api/meetings/${roomId}/complete`)
+          .then((res) => {
+            console.log(res.data);
+            // Navigate to the dashboard
+            navigate("/");
+          })
+          .catch((err) => {
+            console.error("Error completing meeting:", err);
+          });
+      }
+    };
+    reader.readAsArrayBuffer(audioBlob);
+  }
+};
+
 
   return (
     <VStack spacing={6} align="stretch">

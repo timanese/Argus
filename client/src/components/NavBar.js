@@ -14,35 +14,17 @@ import {
   MenuDivider,
   useDisclosure,
   useColorModeValue,
+  Link,
   Stack,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-
-const Links = ["Dashboard", "Projects", "Team"];
-
-const NavLink = (props) => {
-  const { children } = props;
-
-  return (
-    <Box
-      as="a"
-      px={2}
-      py={1}
-      rounded={"md"}
-      _hover={{
-        textDecoration: "none",
-        bg: useColorModeValue("gray.200", "gray.700"),
-      }}
-      href={"#"}
-    >
-      {children}
-    </Box>
-  );
-};
+import { useAuth } from "../contexts/UserContext";
 
 export default function NavBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   return (
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
@@ -61,9 +43,8 @@ export default function NavBar() {
               spacing={4}
               display={{ base: "none", md: "flex" }}
             >
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
+              <Link onClick={()=>{navigate("/")}}>Home</Link>
+              <Link onClick={()=>{navigate("/profile")}}>Profile</Link>
             </HStack>
           </HStack>
           <Flex alignItems={"center"}>
@@ -83,10 +64,9 @@ export default function NavBar() {
                 />
               </MenuButton>
               <MenuList>
-                <MenuItem>View Profile</MenuItem>
-                <MenuItem>Update Profile</MenuItem>
+                <MenuItem onClick={(e)=>{navigate("/profile")}}>View Profile</MenuItem>
                 <MenuDivider />
-                <MenuItem>Preferences</MenuItem>
+                <MenuItem onClick={logout}>Sign Out</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
@@ -95,9 +75,8 @@ export default function NavBar() {
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
+            <Link onClick={()=>{navigate("/")}}>Home</Link>
+            <Link onClick={()=>{navigate("/profile")}}>Profile</Link>
             </Stack>
           </Box>
         ) : null}

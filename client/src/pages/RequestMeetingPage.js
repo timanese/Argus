@@ -8,40 +8,30 @@ import {
   Button,
   Heading,
   Flex,
-  FormControl,
-  GridItem,
-  FormLabel,
   Input,
   Select,
-  Divider,
-  SimpleGrid,
-  InputLeftAddon,
   InputGroup,
-  Textarea,
-  FormHelperText,
-  SliderTrack,
-  Slider,
-  Stack,
-  SliderFilledTrack,
   InputLeftElement,
-  SliderThumb,
   Text,
-  Checkbox,
-  Radio,
-  RadioGroup, 
 } from "@chakra-ui/react";
-import { PhoneIcon, CalendarIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import {
+  PhoneIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  AtSignIcon,
+} from "@chakra-ui/icons";
 
 import { useToast } from "@chakra-ui/react";
 import { useAuth } from "../contexts/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Places from "../components/Place";
 
 const Form1 = () => {
   const [meetingTitle, setMeetingTitle] = useState("");
   const [timeDate, setTimeDate] = useState("");
   const [monitorLevel, setMonitorLevel] = useState(1);
-  
+
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
@@ -96,7 +86,7 @@ const Form2 = () => {
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
         Who are you meeting with?
       </Heading>
-      
+
       <Text mt={4}>Name</Text>
       <InputGroup>
         <InputLeftElement pointerEvents="none">
@@ -111,50 +101,33 @@ const Form2 = () => {
         />
       </InputGroup>
       <Text mt={4}>Phone Number</Text>
-     <InputGroup>
-          <InputLeftElement pointerEvents="none">
-            <PhoneIcon color="gray.300" />
-          </InputLeftElement>
-          <Input
-            type="tel"
-            name="phoneNumber"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)} // Pass index 'i' here placeholder="Phone number" />
-          />
-        </InputGroup>
-      
+      <InputGroup>
+        <InputLeftElement pointerEvents="none">
+          <PhoneIcon color="gray.300" />
+        </InputLeftElement>
+        <Input
+          type="tel"
+          name="phoneNumber"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)} // Pass index 'i' here placeholder="Phone number" />
+        />
+      </InputGroup>
     </>
   );
 };
 
 const Form3 = () => {
-  const [emergencyContacts, setEmergencyContacts] = useState([]);
-
   return (
     <>
-      {/* <Heading w="100%" textAlign={"center"} fontWeight="normal">
-        Enter Emergency Contacts
+      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
+        Where are you meeting?
       </Heading>
-      <FormLabel fontWeight={"normal"}>
-        How many emergency contacts do you have?
-      </FormLabel>
-      <Slider
-        max="5"
-        focusThumbOnChange={false}
-        value={value}
-        onChange={handleChange}
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb fontSize="sm" boxSize="32px" children={value} />
-      </Slider>
-      <Box>{components}</Box> */}
+      <Places />
     </>
   );
 };
 
-export default function OnboardingPage() {
+export default function Request() {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(33.33);

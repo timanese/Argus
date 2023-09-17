@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import Places from "./components/Place";
 import RequestMeetingPage from "./pages/RequestMeetingPage";
 
 const LOGIN_ROUTE = "/login";
@@ -47,6 +48,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path={LOGIN_ROUTE} element={<LoginPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route path="/places" element={<Places />} />
           <Route path="/requestMeeting" element={<RequestMeetingPage />} />
         </Routes>
       </UserProvider>

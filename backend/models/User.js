@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   emergencyContacts: [EmergencyContactSchema],
   exchangeHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Exchange" }],
+  optedInToNotifcations: { type: Boolean, required: false },
 });
 
 module.exports = mongoose.model("User", UserSchema);

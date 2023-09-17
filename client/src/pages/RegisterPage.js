@@ -25,11 +25,15 @@ import { useAuth } from "../contexts/UserContext";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [optedInChecked, setOptedInChecked] = useState(false);
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSignUp = () => {
     // Navigate to OnboardingPage after successful registration
+    let user_ = { ...user};
+    user_.optedInToNotifcations = optedInChecked;
+    setUser(user_);
     navigate("/onboarding");
   };
 
@@ -37,12 +41,22 @@ export default function RegisterPage() {
     if (e && e.target) {
       var { name, value } = e.target;
     }
-    console.log(user, name, value);
+
     setUser({
       ...user,
       [name]: value,
     });
   };
+
+  const toggleOptIn = (e) => {
+    let checked = e.target.checked;
+    let user_ = { ...user};
+    user_.optedInToNotifcations = checked;
+    setUser(user_);
+    setOptedInChecked(checked);
+    console.log(checked)
+  };
+
 
   return (
     <Flex
@@ -127,7 +141,7 @@ export default function RegisterPage() {
               openDelay={500}
             >
               <FormControl id="opted-in">
-                <Checkbox>Yes, I would like to receive text alerts.*</Checkbox>
+                <Checkbox onChange={toggleOptIn} name="optedInToNotifcations">Yes, I would like to receive text alerts.*</Checkbox>
               </FormControl>
             </Tooltip>
 

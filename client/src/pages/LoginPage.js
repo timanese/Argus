@@ -9,8 +9,10 @@ import {
   Checkbox,
   Link,
   Stack,
+  Center,
   Button,
   Heading,
+  Spinner,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
@@ -46,6 +48,13 @@ export default function LoginPage() {
     }
   }
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      // If Enter key is pressed, submit the form
+      handleLogin();
+    }
+  };
+
   return (
     <Flex
       minH={"100vh"}
@@ -55,9 +64,9 @@ export default function LoginPage() {
     >
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
-          <Heading fontSize={"4xl"}>Login For Safe Meetups</Heading>
+          <Center><Heading fontSize={"4xl"}>🛡️Argus🛡️</Heading></Center>
           <Text fontSize={"lg"} color={"gray.600"}>
-            Argus - safety is a priority
+            Connect with Confidence
           </Text>
         </Stack>
         <Box
@@ -73,7 +82,7 @@ export default function LoginPage() {
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input value={password} onChange={(e)=>{setPassword(e.target.value)}} type="password" />
+              <Input onKeyDown={handleKeyPress} value={password} onChange={(e)=>{setPassword(e.target.value)}} type="password" />
             </FormControl>
             <Stack spacing={10}>
               <Button

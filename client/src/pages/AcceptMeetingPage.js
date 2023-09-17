@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import {
 import { getUser, useAuth } from "../contexts/UserContext";
 import CreateContactModal from "../components/CreateContactModal";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
+import NavBar from "../components/NavBar";
 
 const SelectEmergencyContact = ({
   selectedContact,
@@ -96,6 +97,7 @@ const AcceptMeetingPage = () => {
     const { lat, lng } = await getLatLng(results[0]);
     setAddress({ lat, lng });
   };
+
   useEffect(() => {
     axios
       .get(`http://localhost:3001/api/users/${user._id}/emergencyContacts`)
@@ -178,7 +180,7 @@ const AcceptMeetingPage = () => {
               }
               zoom={15}
             >
-              <Marker
+              <MarkerF
                 position={
                   address.lat && address.lng
                     ? address

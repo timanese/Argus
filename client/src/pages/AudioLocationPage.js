@@ -13,6 +13,7 @@ import {
   Container,
   Flex,
 } from "@chakra-ui/react";
+import NavBar from "../components/NavBar";
 
 function AudioLocationPage() {
   const [audioUrl, setAudioUrl] = useState("");
@@ -75,8 +76,14 @@ function AudioLocationPage() {
   };
 
   return (
-    <Flex minHeight="100vh" width="full" align="center" justifyContent="center">
-      <Container maxW="100%" height="90%" centerContent>
+    <Flex
+      height="100vh"
+      width="100vw"
+      justifyContent="center"
+      flexDirection="column"
+    >
+      <NavBar />
+      <Container marginTop="10" maxW="100%" height="90%" centerContent>
         <VStack
           spacing={6}
           align="stretch"

@@ -250,10 +250,10 @@ exports.initiate = async (req, res) => {
 };
 
 exports.complete = async (req, res) => {
-  const { meetingId } = req.params;
+  const { id } = req.params;
 
   try {
-    const meeting = await Meeting.findById(meetingId)
+    const meeting = await Meeting.findById(id)
       .populate("initiatedBy", "emergencyContacts")
       .populate("acceptedBy", "emergencyContacts");
 

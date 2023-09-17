@@ -21,7 +21,7 @@ import { PhoneIcon, CalendarIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import CreateContactModal from "./../components/CreateContactModal";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/UserContext";
+import { getUser, useAuth } from "../contexts/UserContext";
 import Places from "../components/Place";
 export default function RequestMeetingPage() {
   const [step, setStep] = useState(1);
@@ -35,7 +35,7 @@ export default function RequestMeetingPage() {
   const [selectedContact, setSelectedContact] = useState(null);
   const [emergencyContacts, setEmergencyContacts] = useState([]);
 
-  const { user } = useAuth();
+  const user = getUser();
   const userId = user._id;
   const toast = useToast();
   const navigate = useNavigate();

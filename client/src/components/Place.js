@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
   getGeocode,
@@ -55,14 +55,16 @@ const PlacesAutocomplete = ({ setSelected, setLocation }) => {
     const { lat, lng } = await getLatLng(results[0]);
     setSelected({ lat, lng });
   };
-  console.log(value);
+  useEffect(() => {
+    setLocation(value);
+  }, [value, setLocation]);
+
   return (
     <Box>
       <Input
         value={value}
         onChange={(e) => {
           setValue(e.target.value);
-          setLocation(e.target.value);
         }}
         disabled={!ready}
         className="combobox-input"

@@ -39,7 +39,6 @@ export default function RequestMeetingPage() {
   const userId = user._id;
   const toast = useToast();
   const navigate = useNavigate();
-  console.log(location);
   const onSubmit = () => {
     axios
       .post("http://localhost:3001/api/meetings/request", {
@@ -48,7 +47,7 @@ export default function RequestMeetingPage() {
         initiatedBy: user._id,
         initiatedByEmergencyContact: selectedContact,
         phoneNumber: phoneNumber,
-        location: "Your Location Here", // Replace with actual location
+        location: location,
         startTime: timeDate,
       })
       .then((response) => {

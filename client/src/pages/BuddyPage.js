@@ -39,13 +39,13 @@ const BuddyPage = () => {
   const meetingId = id;
   // Initialize Socket.io
   const socket = io("http://localhost:3001"); // Replace with your server URL
-  const [selectedAudio, setSelectedAudio] = useState(null);
-  const [gpsLogs, setGpsLogs] = useState({});
+  const [buddyAudioId, setBuddyAudioId] = useState("");
   const [audioLogs, setAudioLogs] = useState([]);
-  const [buddyLocation, setBuddyLocation] = useState({
+    const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
   });
+  const [gpsLogs, setGpsLogs] = useState({});
 
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const { isLoaded, loadError } = useJsApiLoader({
@@ -96,9 +96,11 @@ const BuddyPage = () => {
     });
 
     // Listen for audio updates
-    socket.on("updateAudio", (newAudioId) => {
-      // Fetch the new audio file by its ID and update the state
-      // setAudioLogs((prevAudioLogs) => [...prevAudioLogs, newAudio]);
+    socket.on("updateAudio", (newAudioId, roomAudioLogs) => {
+      setBuddyAudioId(newAudioId);
+      setAudioLogs(roomAudioLogs);
+      console.log("Received audioId:", newAudioId);
+      console.log("Room Audio Logs:", roomAudioLogs);
     });
 
     // Cleanup

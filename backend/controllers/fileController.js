@@ -1,5 +1,5 @@
 const multer = require("multer");
-const MongoClient = require("mongodb").MongoClient;
+// const MongoClient = require("mongodb").MongoClient;
 const { GridFsStorage } = require("multer-gridfs-storage");
 const {ObjectId}  = require("mongodb");
 const dotenv = require("dotenv").config();
@@ -23,47 +23,33 @@ const fileStorage = new GridFsStorage({
 
 const upload = multer({ storage: fileStorage });
 
-// exports.uploadFile = (req, res) => {
-//   upload.array("files")(req, res, (err) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({ message: "Error uploading files" });
-//     }
-//     // console.log(req.files.map((file) => file.id));
-//     res.status(200).send({ message: "File uploaded", files: req.files, fileIds: req.files.map((file) => file.id) });
-//   });
-// };
+const { MongoClient, GridFSBucket } = require('mongodb');
 
-exports.uploadFile = (buffer, callback) => {
-  // Create a mock request and response object
-  console.log("Uploading FILE IN FILECONTROLLER");
-  const mockReq = {
-    files: [buffer], // Replace this with the actual buffer
-  };
-  const mockRes = {
-    status: function (statusCode) {
-      this.statusCode = statusCode;
-      return this;
-    },
-    send: function (data) {
-      callback(null, data);
-    },
-  };
+exports.uploadFile = async (buffer, filename) => {
+    const client = await MongoClient.connect(process.env.MONGO_URI);
+    const db = client.db('Argus');
+    const bucket = new GridFSBucket(db, {
+      bucketName: 'files'
+    });
 
-  upload.array("files")(mockReq, mockRes, (err) => {
-    if (err) {
-      console.error(err);
-      callback(err);
-    } else {
-      callback(null, {
-        message: "File uploaded",
-        files: mockReq.files,
-        fileIds: mockReq.files.map((file) => file.id),
-      });
+  const uploadStream = bucket.openUploadStream(filename);
+  const id = uploadStream.id;
+
+  uploadStream.write(buffer, (error) => {
+    if (error) {
+      console.error('Error writing to GridFS', error);
+      client.close();
+      return;
     }
-  });
-};
 
+    uploadStream.end(() => {
+      console.log('File uploaded successfully');
+      client.close();
+    });
+  });
+
+  return id;
+}
 
 exports.pushFile = async (req, res) => {
   try {

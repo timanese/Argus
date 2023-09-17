@@ -31,12 +31,13 @@ socket.on('connect', () => {
       console.error('Error reading the file:', err);
       return;
     }
-    console.log(buffer);
+    // const base64Audio = buffer.toString('base64');
+    // console.log("Sending audio" + base64Audio);
     // Send the audio buffer
     socket.emit('sendAudio', {
-      // roomId: '65069bdd605bc189823b62ff',
-      // meetingId: '65069bdd605bc189823b62ff',
-      // audioBuffer: buffer
+      roomId: '65069bdd605bc189823b62ff',
+      meetingId: '65069bdd605bc189823b62ff',
+      audioBuffer: buffer
     }, () => {
       console.log('Server acknowledged sendAudio');
     });

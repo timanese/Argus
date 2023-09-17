@@ -38,39 +38,13 @@ module.exports = function (io) {
         });
 
         // When a user sends a new audio file
-        // socket.on('sendAudio', async ({ roomId, audioBuffer, meetingId }) => {
-        // socket.on('sendAudio',() => {
-        //     console.log("Uploading Audio in SocketHandler");
-
-        //     // const audioFileId = await uploadFile(audioBuffer); // Assuming uploadFile is your function to upload the audio buffer and get an ID
-        //     // roomAudioFiles[roomId].push(audioFileId);
-
-        //     // // // Upload this audio to the database
-        //     // // await uploadAudioData(meetingId, audioFileId);
-
-        //     // // Broadcast the new audio file ID to the room
-        //     // io.to(roomId).emit('updateAudio', audioFileId);
-        // });
-
         socket.on('sendAudio', async ({ roomId, audioBuffer, meetingId }) => {
-            console.log("Uploading Audio in SocketHandler");
-            uploadFile(audioBuffer, async (err, result) => {
-                if (err) {
-                console.error('Error uploading file:', err);
-                return;
-                }
+            const audioFileId = await uploadFile(audioBuffer); // Assuming uploadFile is your function to upload the audio buffer and get an ID
+            roomAudioFiles[roomId].push(audioFileId);
 
-                const audioFileId = result.fileIds[0]; // Assuming the ID is stored in the first element
-                roomAudioFiles[roomId].push(audioFileId);
-
-                // Upload this audio to the database
-                // await uploadAudioData(meetingId, audioFileId);
-
-                // Broadcast the new audio file ID to the room
-                io.to(roomId).emit('updateAudio', audioFileId);
-            });
+            // Broadcast the new audio file ID to the room
+            io.to(roomId).emit('updateAudio', audioFileId);
         });
-
 
         // When an emergency contact joins late and requests past GPS logs
         socket.on('requestPastGPSLogs', (roomId) => {

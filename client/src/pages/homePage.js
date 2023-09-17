@@ -7,6 +7,7 @@ import {
   StatNumber,
   useColorModeValue,
   IconButton,
+  Text,
   Flex,
   Button,
 } from "@chakra-ui/react";
@@ -19,11 +20,13 @@ import NavBar from "../components/NavBar";
 import SubmitModal from "./../components/SubmitModal"; // Import the SubmitModal component
 import RequestMeetingPage from "./RequestMeetingPage";
 
+var bp = require("../Path.js");
+
 // Api call to initiate a meeting
 const initiateMeeting = (meetingId, navigate) => {
   // console.log("Initiating meeting:", meetingId);
   axios
-    .put(`http://localhost:3001/api/meetings/${meetingId}/initiate`)
+    .put(bp.buildPath(`/api/meetings/${meetingId}/initiate`))
     .then((res) => {
       console.log(res.data);
       navigate(`/meeting/${meetingId}`);
@@ -170,7 +173,7 @@ export default function HomePage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/meetings/${userId}/getAll`)
+      .get(bp.buildPath(`/api/meetings/${userId}/getAll`))
       .then((res) => {
         setMeetings(res.data.meetings);
         console.log(res.data.meetings);
@@ -220,6 +223,9 @@ export default function HomePage() {
                     status={meeting.status}
                   />
                 ))}
+                {currentMeetings && currentMeetings.length == 0 && (
+                  <Text>No upcoming meetings.</Text>
+                )}
               </SimpleGrid>
             </TabPanel>
             <TabPanel>
@@ -238,6 +244,9 @@ export default function HomePage() {
                     status={meeting.status}
                   />
                 ))}
+                {previousMeetings && previousMeetings.length == 0 && (
+                  <Text>No previous meetings.</Text>
+                )}
               </SimpleGrid>
             </TabPanel>
           </TabPanels>

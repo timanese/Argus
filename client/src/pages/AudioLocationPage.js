@@ -16,13 +16,15 @@ import {
 } from "@chakra-ui/react";
 import NavBar from "../components/NavBar";
 
+var bp = require("../Path.js");
+
 function AudioLocationPage() {
   const [audioUrl, setAudioUrl] = useState("");
   const { id: roomId } = useParams();
   const navigate = useNavigate();
   const { stream, isRecording, startRecording, stopRecording, getRecording } =
     useMediaRecorder();
-  const socket = io("http://localhost:3001"); // Replace with your server URL
+  const socket = io(bp.buildPath("")); // Replace with your server URL
 
   useEffect(() => {
     // const socket = io("http://localhost:3001", {
@@ -78,7 +80,7 @@ const handleEndMeeting = () => {
 
         // Call complete meeting API
         axios
-          .put(`http://localhost:3001/api/meetings/${roomId}/complete`)
+          .put(bp.buildPath(`/api/meetings/${roomId}/complete`))
           .then((res) => {
             console.log(res.data);
             // Navigate to the dashboard

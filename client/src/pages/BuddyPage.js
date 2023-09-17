@@ -26,6 +26,9 @@ import "react-h5-audio-player/lib/styles.css"; // Styles
 import io from "socket.io-client";
 import NavBar from "../components/NavBar";
 
+
+var bp = require("../Path.js");
+
 const containerStyle = {
   width: "100%",
   height: "60vh",
@@ -41,7 +44,8 @@ const BuddyPage = () => {
   console.log(id);
   const meetingId = id;
   // Initialize Socket.io
-  const socket = io("http://localhost:3001"); // Replace with your server URL
+  
+  const socket = io(bp.buildPath("")); // Replace with your server URL
   const [buddyAudioId, setBuddyAudioId] = useState("");
   const [buddyAudio, setBuddyAudio] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
@@ -73,14 +77,14 @@ const BuddyPage = () => {
   const searchParams = new URLSearchParams(location.search);
 
   useEffect(() => {
-    const socket = io("http://localhost:3001", {
+    const socket = io(bp.buildPath(""), {
       withCredentials: true,
     });
 
     const fetchMeeting = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/meetings/${meetingId}`
+          bp.buildPath(`/api/meetings/${meetingId}`)
         );
         const meetingData = response.data;
         console.log(response.data);

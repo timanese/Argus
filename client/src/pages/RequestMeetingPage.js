@@ -35,13 +35,14 @@ export default function RequestMeetingPage() {
   const [selectedContact, setSelectedContact] = useState(null);
   const [emergencyContacts, setEmergencyContacts] = useState([]);
 
+  var bp = require("../Path.js");
   const user = getUser();
   const userId = user._id;
   const toast = useToast();
   const navigate = useNavigate();
   const onSubmit = () => {
     axios
-      .post("http://localhost:3001/api/meetings/request", {
+      .post(bp.buildPath("/api/meetings/request"), {
         meetingTitle: meetingTitle,
         level: monitorLevel,
         initiatedBy: user._id,
@@ -84,7 +85,7 @@ export default function RequestMeetingPage() {
   useEffect(() => {
     // Fetch all emergency contacts for a user
     axios
-      .get(`http://localhost:3001/api/users/${userId}/emergencyContacts`)
+      .get(bp.buildPath(`/api/users/${userId}/emergencyContacts`))
       .then((res) => {
         setEmergencyContacts(res.data);
       })
@@ -289,11 +290,11 @@ const Form4 = ({
   userId,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  var bp = require("../Path.js");
   const createNewContact = (newContact) => {
     axios
       .put(
-        `http://localhost:3001/api/users/${userId}/emergencyContact`,
+        bp.buildPath(`/api/users/${userId}/emergencyContact`),
         newContact
       )
       .then((res) => {

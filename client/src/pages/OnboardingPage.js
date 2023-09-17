@@ -35,6 +35,8 @@ import { useAuth } from "../contexts/UserContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+var bp = require("../Path.js");
+
 const Form1 = () => {
   const { user, setUser } = useAuth();
 
@@ -306,11 +308,10 @@ export default function OnboardingPage() {
   const [progress, setProgress] = useState(33.33);
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
-
   const onSubmit = () => {
     // Data validation can be added here
     axios
-      .post("http://localhost:3001/api/users/register", user)
+      .post(bp.buildPath("/api/users/register"), user)
       .then((response) => {
         // Handle successful registration. Maybe update the user object or redirect to login/dashboard.
         toast({

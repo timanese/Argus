@@ -4,7 +4,7 @@
   "description": "",
   "main": "backend/app.js",
   "scripts": {
-    "heroku-prebuild": "cd client && npm ci && npm run build && cd ..",
+    "heroku-prebuild": "cd client && npm ci && echo REACT_APP_GOOGLE_MAPS_API_KEY=$REACT_APP_GOOGLE_MAPS_API_KEY > .env && npm run build && cd ..",
     "start": "node backend/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

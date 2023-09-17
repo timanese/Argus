@@ -1,0 +1,11 @@
+{
+  "name": "argus",
+  "version": "1.0.0",
+  "description": "Entrypoint for heroku deployment",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd client && npm install && npm run build && cd .. && cd backend && npm start"
+  },
+  "author": "",
+  "license": "ISC"
+}

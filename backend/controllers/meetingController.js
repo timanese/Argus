@@ -28,7 +28,7 @@ exports.uploadGPSData = async (meetingId, gpsLog) => {
 exports.uploadGPS = async (req, res) => {
   const { meetingId } = req.params;
   const { gpsLog } = req.body;
-
+  console.log(gpsLog);
   try {
     await uploadGPSData(meetingId, gpsLog);
     res.status(200).json({ msg: "GPS log added successfully" });
@@ -168,16 +168,16 @@ exports.accept = async (req, res) => {
         .json({ msg: "Meeting is already accepted or completed" });
     }
 
+    meeting.status = "Scheduled";
+    meeting.acceptedBy = acceptedBy;
+    meeting.acceptedByEmergencyContact = acceptedByEmergencyContact;
+
     // Update the meeting
     let acceptedByUser = await User.findById(acceptedBy);
     // This assumes that emergencyContacts is an array of objects and each object has an '_id' property
     let acceptedByEmergencyContactUser = await User.findById(
       acceptedByEmergencyContact
     );
-
-    meeting.status = "Scheduled";
-    meeting.acceptedBy = acceptedBy;
-    meeting.acceptedByEmergencyContact = acceptedByEmergencyContact;
 
     // Message to be sent to the initiator of the meeting
     const initiatorMessage = `Your meeting request has been accepted by ${acceptedByUser.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
@@ -260,22 +260,22 @@ exports.complete = async (req, res) => {
     if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
 
     // Update meeting status
-    meeting.status = "completed";
+    meeting.status = "Completed";
     await meeting.save();
 
-    // Extract emergency contacts
-    const initiatorContacts = meeting.initiatedBy.emergencyContacts;
-    const acceptorContacts = meeting.acceptedBy.emergencyContacts;
-    const allContacts = [...initiatorContacts, ...acceptorContacts];
+    // // Extract emergency contacts
+    // const initiatorContacts = meeting.initiatedBy.emergencyContacts;
+    // const acceptorContacts = meeting.acceptedBy.emergencyContacts;
+    // const allContacts = [...initiatorContacts, ...acceptorContacts];
 
-    // Send SMS to inform contacts that parties are safe
-    for (const contact of allContacts) {
-      await twilioClient.messages.create({
-        body: `Safety Alert: The meeting between ${meeting.initiatedBy.firstName} and ${meeting.acceptedBy.firstName} has been safely completed.`,
-        to: contact.phoneNumber,
-        from: "+18449943470",
-      });
-    }
+    // // Send SMS to inform contacts that parties are safe
+    // for (const contact of allContacts) {
+    //   await twilioClient.messages.create({
+    //     body: `Safety Alert: The meeting between ${meeting.initiatedBy.firstName} and ${meeting.acceptedBy.firstName} has been safely completed.`,
+    //     to: contact.phoneNumber,
+    //     from: "+18449943470",
+    //   });
+    // }
 
     res.status(200).json({ msg: "Meeting successfully completed" });
   } catch (err) {

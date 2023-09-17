@@ -46,18 +46,19 @@ const BuddyPage = () => {
   const [buddyAudio, setBuddyAudio] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [audioLogs, setAudioLogs] = useState([{}]);
+  // const
   const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
   });
   const [gpsLogs, setGpsLogs] = useState({});
-  const path = [
-    { lat: 40.73061, lng: -73.935242 }, // New York City
-    { lat: 34.052235, lng: -118.243683 }, // Los Angeles
-    { lat: 41.878113, lng: -87.629799 }, // Chicago
-    { lat: 29.760427, lng: -95.369804 }, // Houston
-    { lat: 33.448376, lng: -112.074036 }, // Phoenix
-  ];
+  // const path = [
+  //   { lat: 40.73061, lng: -73.935242 }, // New York City
+  //   { lat: 34.052235, lng: -118.243683 }, // Los Angeles
+  //   { lat: 41.878113, lng: -87.629799 }, // Chicago
+  //   { lat: 29.760427, lng: -95.369804 }, // Houston
+  //   { lat: 33.448376, lng: -112.074036 }, // Phoenix
+  // ];
 
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const { isLoaded, loadError } = useJsApiLoader({
@@ -159,9 +160,9 @@ const BuddyPage = () => {
             center={buddyLocation}
             zoom={15}
           >
-            <Polyline path={path} options={{ strokeColor: "#FF0000 " }} />
+            <Polyline path={gpsLogs} options={{ strokeColor: "#FF0000 " }} />
 
-            <MarkerF position={center} />
+            <MarkerF position={buddyLocation} />
           </GoogleMap>
         )}
       </div>
@@ -234,16 +235,17 @@ const BuddyPage = () => {
       {/* Audio Player */}
       <div
         style={{
-          position: "absolute",
-          bottom: "10px",
+          // position: "absolute",
+          padding: "15px",
           width: "100%",
           display: "flex",
           justifyContent: "center",
+          alignContent: "center",
         }}
       >
         {audioUrl !== "" && (
           <AudioPlayer
-            style={{ width: "30%" }} // inline style for width
+            style={{ width: "80%" }} // inline style for width
             autoPlay={false}
             src={audioUrl}
           />

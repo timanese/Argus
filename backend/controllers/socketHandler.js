@@ -50,7 +50,7 @@ module.exports = function (io) {
                 // Broadcast this location to the emergency client in the same room
                 io.to(roomId).emit('updateAudio', audioFileId, audioBuffer);
             } else {
-                console.error("Failed to upload GPS data");
+                console.error("Failed to upload Audio data");
             }
         });
 

@@ -1,5 +1,5 @@
 "use client";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import {
   Flex,
   Box,
@@ -14,8 +14,38 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useAuth } from "../contexts/UserContext";
+import { useRef, useState } from "react";
+import { useToast } from "@chakra-ui/react";
 
 export default function LoginPage() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login , user } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  async function handleLogin() {
+    try {
+      setLoading(true);
+      const tempUser = await login(email, password);
+      setLoading(false);
+      navigate("/")
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: "Login failed.",
+        description: "An error occurred.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setLoading(false);
+    }
+  }
+
   return (
     <Flex
       minH={"100vh"}
@@ -39,14 +69,16 @@ export default function LoginPage() {
           <Stack spacing={4}>
             <FormControl id="email">
               <FormLabel>Email address</FormLabel>
-              <Input type="email" />
+              <Input value={email} onChange={(e)=>{setEmail(e.target.value)}} type="email" />
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input type="password" />
+              <Input value={password} onChange={(e)=>{setPassword(e.target.value)}} type="password" />
             </FormControl>
             <Stack spacing={10}>
               <Button
+              disabled={loading}
+              onClick={handleLogin}
                 bg={"blue.400"}
                 color={"white"}
                 _hover={{

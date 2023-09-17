@@ -123,7 +123,6 @@ exports.request = async (req, res) => {
     const shareableUrl = `http://localhost:3001/api/meetings/share/${uniqueId}`;
 
     // Ideally, you would associate this uniqueId with the meeting record in the database for later retrieval.
-
     res
       .status(201)
       .json({ msg: "Meeting requested successfully", meeting, shareableUrl });

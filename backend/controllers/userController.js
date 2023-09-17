@@ -60,7 +60,6 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-
   try {
     // Check if the user exists
     const user = await User.findOne({ email });
@@ -73,10 +72,9 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
-
     const { pass, ...rest } = user._doc;
 
-    res.json(rest);
+    res.json({user: rest});
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

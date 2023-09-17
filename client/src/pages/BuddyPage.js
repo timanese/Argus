@@ -16,6 +16,7 @@ import {
   InfoWindow,
   Marker,
   useJsApiLoader,
+  Polyline,
 } from "@react-google-maps/api";
 import axios from "axios";
 import { useLocation, useParams } from "react-router-dom";
@@ -48,6 +49,13 @@ const BuddyPage = () => {
     lng: -74.006,
   });
   const [gpsLogs, setGpsLogs] = useState({});
+  const path = [
+    { lat: 40.73061, lng: -73.935242 }, // New York City
+    { lat: 34.052235, lng: -118.243683 }, // Los Angeles
+    { lat: 41.878113, lng: -87.629799 }, // Chicago
+    { lat: 29.760427, lng: -95.369804 }, // Houston
+    { lat: 33.448376, lng: -112.074036 }, // Phoenix
+  ];
 
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const { isLoaded, loadError } = useJsApiLoader({
@@ -57,7 +65,7 @@ const BuddyPage = () => {
   const toast = useToast();
   const [meeting, setMeeting] = useState(null);
   const location = useLocation();
-
+  console.log(gpsLogs);
   // Extract the meeting ID from the query parameters
   const searchParams = new URLSearchParams(location.search);
 
@@ -72,6 +80,7 @@ const BuddyPage = () => {
           `http://localhost:3001/api/meetings/${meetingId}`
         );
         const meetingData = response.data;
+        console.log(response.data);
         setMeeting(meetingData);
         setGpsLogs(meetingData.gpsLogs || []);
         setAudioLogs(meetingData.audioLogs || []);
@@ -147,6 +156,8 @@ const BuddyPage = () => {
             center={buddyLocation}
             zoom={15}
           >
+            <Polyline path={path} options={{ strokeColor: "#FF0000 " }} />
+
             <Marker position={center} />
           </GoogleMap>
         )}

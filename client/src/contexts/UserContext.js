@@ -18,9 +18,6 @@ export function UserProvider({ children }) {
     const logoutPromise = new Promise(async (resolve, reject) => {
       let accessToken = sessionStorage.getItem(ACCESS_TOKEN_SESSION_STORAGE);
       try {
-        axios.post(bp.buildPath("/api/logout"), {
-          accessToken: accessToken,
-        });
         console.log("Logout.");
         sessionStorage.removeItem(ACCESS_TOKEN_SESSION_STORAGE);
         setUser();
@@ -35,16 +32,17 @@ export function UserProvider({ children }) {
   async function login(email, password) {
     const loginPromise = new Promise(async (resolve, reject) => {
       // logout before logging back in.
-      if (sessionStorage.getItem(ACCESS_TOKEN_SESSION_STORAGE) != null) {
+      if (sessionStorage.getItem(ACCESS_TOKEN_SESSION_STORAGE)) {
         try {
           await logout();
         } catch (error) {
           reject(error);
         }
       }
+
       try {
-        const res = await axios.post(bp.buildPath("/api/login"), {
-          email: email.toLowerCase(),
+        const res = await axios.post(bp.buildPath("/api/users/login"), {
+          email: email,
           password: password,
         });
         if (res && res.data && res.data.error) {

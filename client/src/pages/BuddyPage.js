@@ -41,7 +41,7 @@ const BuddyPage = () => {
   const socket = io("http://localhost:3001"); // Replace with your server URL
   const [buddyAudioId, setBuddyAudioId] = useState("");
   const [audioLogs, setAudioLogs] = useState([]);
-    const [buddyLocation, setBuddyLocation] = useState({
+  const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
   });
@@ -109,7 +109,6 @@ const BuddyPage = () => {
     };
   }, [meetingId]);
 
-
   const handleSubmitReport = () => {
     toast({
       title: "Report Submitted.",
@@ -125,7 +124,7 @@ const BuddyPage = () => {
     const selected = audioLogs.find(
       (audio) => audio.id === parseInt(selectedId)
     );
-    setSelectedAudio(selected);
+    setBuddyAudioId(selected);
   };
 
   const openReportModal = () => setReportModalOpen(true);
@@ -218,11 +217,11 @@ const BuddyPage = () => {
           justifyContent: "center",
         }}
       >
-        {selectedAudio && (
+        {buddyAudioId && (
           <AudioPlayer
             style={{ width: "80%" }} // inline style for width
             autoPlay={false}
-            src={selectedAudio.url}
+            src={buddyAudioId.url}
           />
         )}
       </div>

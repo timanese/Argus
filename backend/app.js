@@ -14,13 +14,22 @@ const socketHandler = require("./controllers/socketHandler.js"); // Replace with
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',  // replace with your application's origin
+  credentials: true  // <-- Add this line
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Create an HTTP server instance with your Express app
 const server = http.createServer(app);
-const io = require("socket.io")(server);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "http://localhost:3000",  // replace with your application's origin
+    methods: ["GET", "POST"],
+    credentials: true  // <-- Add this line
+  }
+});
 
 // Initialize your socketHandler here
 socketHandler(io);

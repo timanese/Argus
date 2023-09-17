@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { getUser, useAuth } from "../contexts/UserContext";
 import CreateContactModal from "../components/CreateContactModal";
+import { getGeocode, getLatLng } from "use-places-autocomplete";
 
 const SelectEmergencyContact = ({
   selectedContact,
@@ -89,6 +90,12 @@ const AcceptMeetingPage = () => {
   if (!user) {
     navigate("/");
   }
+  const [address, setAddress] = useState({});
+  const handleAddress = async (address) => {
+    const results = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(results[0]);
+    setAddress({ lat, lng });
+  };
   useEffect(() => {
     axios
       .get(`http://localhost:3001/api/users/${user._id}/emergencyContacts`)
@@ -103,7 +110,9 @@ const AcceptMeetingPage = () => {
         `http://localhost:3001/api/meetings/${id ?? "65061a1021811cb7732c20e2"}`
       )
       .then((response) => {
+        console.log(response.data);
         setMeeting(response.data ?? {});
+        handleAddress(response?.data?.location);
       })
       .catch((error) => {
         console.error("Error fetching meeting:", error);
@@ -164,19 +173,17 @@ const AcceptMeetingPage = () => {
                 margin: "20px",
               }}
               center={
-                meeting.location ?? {
-                  lat: 40.7128,
-                  lng: -74.006,
-                }
+                address.lat && address.lng
+                  ? address
+                  : { lat: 40.7128, lng: -74.006 }
               }
               zoom={15}
             >
               <Marker
                 position={
-                  meeting.location ?? {
-                    lat: 40.7128,
-                    lng: -74.006,
-                  }
+                  address.lat && address.lng
+                    ? address
+                    : { lat: 40.7128, lng: -74.006 }
                 }
               />
             </GoogleMap>

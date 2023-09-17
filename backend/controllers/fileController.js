@@ -23,16 +23,47 @@ const fileStorage = new GridFsStorage({
 
 const upload = multer({ storage: fileStorage });
 
-exports.uploadFile = (req, res) => {
-  upload.array("files")(req, res, (err) => {
+// exports.uploadFile = (req, res) => {
+//   upload.array("files")(req, res, (err) => {
+//     if (err) {
+//       console.error(err);
+//       return res.status(500).json({ message: "Error uploading files" });
+//     }
+//     // console.log(req.files.map((file) => file.id));
+//     res.status(200).send({ message: "File uploaded", files: req.files, fileIds: req.files.map((file) => file.id) });
+//   });
+// };
+
+exports.uploadFile = (buffer, callback) => {
+  // Create a mock request and response object
+  console.log("Uploading FILE IN FILECONTROLLER");
+  const mockReq = {
+    files: [buffer], // Replace this with the actual buffer
+  };
+  const mockRes = {
+    status: function (statusCode) {
+      this.statusCode = statusCode;
+      return this;
+    },
+    send: function (data) {
+      callback(null, data);
+    },
+  };
+
+  upload.array("files")(mockReq, mockRes, (err) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: "Error uploading files" });
+      callback(err);
+    } else {
+      callback(null, {
+        message: "File uploaded",
+        files: mockReq.files,
+        fileIds: mockReq.files.map((file) => file.id),
+      });
     }
-    // console.log(req.files.map((file) => file.id));
-    res.status(200).send({ message: "File uploaded", files: req.files, fileIds: req.files.map((file) => file.id) });
   });
 };
+
 
 exports.pushFile = async (req, res) => {
   try {

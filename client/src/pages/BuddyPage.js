@@ -40,7 +40,7 @@ const BuddyPage = () => {
   // Initialize Socket.io
   const socket = io("http://localhost:3001"); // Replace with your server URL
   const [selectedAudio, setSelectedAudio] = useState(null);
-  const [gpsLogs, setGpsLogs] = useState([]);
+  const [gpsLogs, setGpsLogs] = useState({});
   const [audioLogs, setAudioLogs] = useState([]);
   const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
@@ -58,62 +58,55 @@ const BuddyPage = () => {
 
   // Extract the meeting ID from the query parameters
   const searchParams = new URLSearchParams(location.search);
-  // const meetingId = searchParams.get("meetingId");
-  // const meetingId = "65067d2226e9c544996f193e";
 
   useEffect(() => {
-      // Initialize Socket.io
-      const socket = io("http://localhost:3001", {
-        withCredentials: true,
-      });
+    const socket = io("http://localhost:3001", {
+      withCredentials: true,
+    });
 
-      // Fetch the meeting by its ID
-      const fetchMeeting = async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3001/api/meetings/${meetingId}`
-          );
-          const meetingData = response.data;
-          setMeeting(meetingData);
-          setGpsLogs(meetingData.gpsLogs || []);
-          setAudioLogs(meetingData.audioLogs || []);
-
-          // Set the buddy location based on the last log in gpsLogs
-          if (meetingData.gpsLogs && meetingData.gpsLogs.length > 0) {
-            setBuddyLocation(meetingData.gpsLogs[meetingData.gpsLogs.length - 1]);
-          }
-
-          // Join the room
-          socket.emit("joinRoom", meetingId);
-
-          console.log("JOINED ROOM");
-
-          // Listen for location updates
-          socket.on("updateLocation", (newLocation) => {
-            setBuddyLocation(newLocation);
-          });
-
-          // Listen for audio updates
-          socket.on("updateAudio", (newAudioId) => {
-            // Fetch the new audio file by its ID and update the state
-            // setAudioLogs([...audioLogs, newAudio]);
-          });
-
-          // Sleep for 5 seconds
-          await new Promise((resolve) => setTimeout(resolve, 1));
-
-        } catch (error) {
-          console.error("Error fetching the meeting:", error);
+    const fetchMeeting = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/meetings/${meetingId}`
+        );
+        const meetingData = response.data;
+        setMeeting(meetingData);
+        setGpsLogs(meetingData.gpsLogs || []);
+        setAudioLogs(meetingData.audioLogs || []);
+        if (meetingData.gpsLogs && meetingData.gpsLogs.length > 0) {
+          setBuddyLocation(meetingData.gpsLogs[meetingData.gpsLogs.length - 1]);
         }
-      };
+      } catch (error) {
+        console.error("Error fetching the meeting:", error);
+      }
+    };
 
-      fetchMeeting();
+    // Fetch meeting data
+    fetchMeeting();
 
-      // Cleanup
-      return () => {
-        socket.disconnect();
-      };
-    }, [meetingId]);
+    // Join the room
+    socket.emit("joinRoom", meetingId);
+
+    // Listen for location updates
+    socket.on("updateLocation", (newLocation, roomGPSLogs) => {
+      setBuddyLocation(newLocation);
+      setGpsLogs(roomGPSLogs);
+      console.log("Received location:", newLocation);
+      console.log("Room GPS Logs:", roomGPSLogs);
+    });
+
+    // Listen for audio updates
+    socket.on("updateAudio", (newAudioId) => {
+      // Fetch the new audio file by its ID and update the state
+      // setAudioLogs((prevAudioLogs) => [...prevAudioLogs, newAudio]);
+    });
+
+    // Cleanup
+    return () => {
+      socket.disconnect();
+    };
+  }, [meetingId]);
+
 
   const handleSubmitReport = () => {
     toast({

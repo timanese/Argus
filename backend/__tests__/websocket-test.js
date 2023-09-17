@@ -1,4 +1,5 @@
 const io = require('socket.io-client');
+const fs = require('fs');
 
 const socket = io('http://localhost:3001');
 
@@ -6,17 +7,45 @@ socket.on('connect', () => {
   console.log('Connected to the server');
 
   // Join a room
-  socket.emit('joinRoom', '123');
-
-  console.log("Sending location");
+  socket.emit('joinRoom', '65069bdd605bc189823b62ff', () => {
+    console.log('Server acknowledged joinRoom');
+  });
 
   // Send location
   socket.emit('sendLocation', {
-    roomId: '123',
+    roomId: '65069bdd605bc189823b62ff',
+    meetingId: '65069bdd605bc189823b62ff',
     location: {
-      latitude: 1.0,
-      longitude: 1.0,
+      lat: 5.0,
+      long: 8.0,
     },
+  }, () => {
+    console.log('Server acknowledged sendLocation');
   });
 
+  console.log("Sending location");
+
+    // Read an audio file into a buffer
+  fs.readFile('./../../../alex-productions-walking-home.mp3', (err, buffer) => {
+    if (err) {
+      console.error('Error reading the file:', err);
+      return;
+    }
+    console.log(buffer);
+    // Send the audio buffer
+    socket.emit('sendAudio', {
+      // roomId: '65069bdd605bc189823b62ff',
+      // meetingId: '65069bdd605bc189823b62ff',
+      // audioBuffer: buffer
+    }, () => {
+      console.log('Server acknowledged sendAudio');
+    });
+  });
+
+  // Comment this out for now
+  // socket.disconnect();
+});
+
+socket.on('disconnect', (reason) => {
+  console.log('Disconnected:', reason);
 });

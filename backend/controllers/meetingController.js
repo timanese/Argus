@@ -4,12 +4,12 @@ const User = require("../models/User");
 const twilioClient = require("../config/twilio");
 
 // General-purpose function to upload GPS data
-const uploadGPSData = async (meetingId, gpsLog) => {
+exports.uploadGPSData = async (meetingId, gpsLog) => {
   try {
     const meeting = await Meeting.findById(meetingId);
     if (!meeting) {
       console.error("Meeting not found");
-      return;
+      return false;
     }
 
     // Add the GPS log to the gpsLogs array
@@ -17,8 +17,10 @@ const uploadGPSData = async (meetingId, gpsLog) => {
 
     await meeting.save();
     console.log("GPS log added successfully");
+    return true;
   } catch (err) {
     console.error(err);
+    return false;
   }
 };
 
@@ -287,3 +289,10 @@ exports.getMeetingById = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+// console.log(uploadGPSData);
+
+// module.exports = {
+//   uploadGPSData,
+//   // ... (other exported functions)
+// };

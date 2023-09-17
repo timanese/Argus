@@ -175,7 +175,9 @@ exports.accept = async (req, res) => {
       acceptedByEmergencyContact
     );
 
-    meeting.status = "Ongoing";
+    meeting.status = "Scheduled";
+    meeting.acceptedBy = acceptedBy;
+    meeting.acceptedByEmergencyContact = acceptedByEmergencyContact;
 
     // Message to be sent to the initiator of the meeting
     const initiatorMessage = `Your meeting request has been accepted by ${acceptedByUser.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
@@ -220,7 +222,7 @@ exports.initiate = async (req, res) => {
     const shareableLink = `http://localhost:3000/emergency/${id}`;
 
     // Store the shareableId in the meeting model (You may want to do this)
-    meeting.uniqueId = shareableId;
+    // meeting.uniqueId = shareableId;
     await meeting.save();
 
     const allContacts = [

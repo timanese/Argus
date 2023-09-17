@@ -19,8 +19,21 @@ import NavBar from "../components/NavBar";
 import SubmitModal from "./../components/SubmitModal"; // Import the SubmitModal component
 import RequestMeetingPage from "./RequestMeetingPage";
 
+// Api call to initiate a meeting
+const initiateMeeting = (meetingId) => {
+  // console.log("Initiating meeting:", meetingId);
+  axios
+    .put(`http://localhost:3001/api/meetings/${meetingId}/initiate`)
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.error("Error initiating meeting:", err);
+    });
+};
+
 function StatsCard(props) {
-  const { meetingTitle, startTime, location, level, status } = props;
+  const { key, meeting, meetingTitle, startTime, location, level, status } = props;
 
   return (
     <Flex
@@ -53,14 +66,10 @@ function StatsCard(props) {
       </Stat>
 
       <Flex justifyContent="flex-end">
-        {status === "Completed" ? (
+        {status !== "Scheduled" ? (
           <></>
-        ) : status === "Pending" ? (
-          <Button size="sm" mt={0} disabled>
-            Start
-          </Button>
         ) : (
-          <Button size="sm" mt={0}>
+          <Button size="sm" mt={0} onClick={() => initiateMeeting(meeting._id)}>
             Start
           </Button>
         )}
@@ -195,6 +204,7 @@ export default function HomePage() {
                 {currentMeetings.map((meeting, index) => (
                   <StatsCard
                     key={index}
+                    meeting={meeting}
                     meetingTitle={meeting.meetingTitle} // Replace with the actual field name
                     name={meeting.initiatedBy.name} // Replace with the actual field name
                     location={meeting.location}

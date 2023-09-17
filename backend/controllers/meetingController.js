@@ -72,7 +72,7 @@ exports.uploadAudio = async (req, res) => {
 exports.getAllMeetings = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
+
     const meetings = await Meeting.find({
       $or: [{ initiatedBy: id }, { acceptedBy: id }],
     })
@@ -112,11 +112,13 @@ exports.request = async (req, res) => {
       level,
       initiatedBy,
       initiatedByEmergencyContact,
+      phoneNumber,
       location,
       startTime,
       status: "Pending", // Default status is set to 'pending'
     });
 
+    console.log("Requesting meeting...");
     // Save the meeting in the database
     await meeting.save();
 

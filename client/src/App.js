@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import Places from "./components/Place";
 import BuddyPage from "./pages/BuddyPage";
 import RequestMeetingPage from "./pages/RequestMeetingPage";
 import AcceptMeetingPage from "./pages/AcceptMeetingPage";

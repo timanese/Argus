@@ -9,6 +9,7 @@ import {
   IconButton
 } from "@chakra-ui/react";
 import axios from "axios";
+import { useAuth } from "../contexts/UserContext";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { AddIcon } from "@chakra-ui/icons"; // Import the AddIcon
@@ -18,7 +19,7 @@ import RequestMeetingPage from "./RequestMeetingPage";
 
 function StatsCard(props) {
   // const { name, location } = props;
-  const { meetingTitle, startTime, location, level } = props;
+  const { meetingTitle, startTime, location, level, status } = props;
 
   return (
     <Stat
@@ -39,7 +40,10 @@ function StatsCard(props) {
         {location}
       </StatLabel>
       <StatLabel fontWeight={"medium"} isTruncated>
-        {"Meeting"}
+        {status}
+      </StatLabel>
+      <StatLabel fontSize={"xs"} fontWeight={"medium"} isTruncated>
+        {level}
       </StatLabel>
     </Stat>
   );
@@ -112,10 +116,12 @@ function StatsCard(props) {
 // }
 
 export default function HomePage() {
+  const { user } = useAuth();
   const [meetings, setMeetings] = useState([]);
   const [currentMeetings, setCurrentMeetings] = useState([]);
   const [previousMeetings, setPreviousMeetings] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // Step 2
+  const userId = user._id;
   const navigate = useNavigate();
 
   const handleOpenModal = () => {
@@ -127,9 +133,6 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    // Fetch all meetings for a user (replace 'userId' with the actual user ID)
-    const userId = "650605e64779da155912d20c";
-    console.log(userId);
     axios.get(`http://localhost:3001/api/meetings/${userId}/getAll`)
       .then((res) => {
         setMeetings(res.data.meetings);
@@ -164,11 +167,12 @@ export default function HomePage() {
             {currentMeetings.map((meeting, index) => (
               <StatsCard
                 key={index}
-                // name={meeting.initiatedBy.name} // Replace with the actual field name
-                // location={meeting.location}
-                startTime={meeting.startTime}
+                meetingTitle={meeting.meetingTitle} // Replace with the actual field name
+                name={meeting.initiatedBy.name} // Replace with the actual field name
                 location={meeting.location}
+                startTime={meeting.startTime}
                 level={meeting.level}
+                status={meeting.status}
               />
             ))}
           </SimpleGrid>
@@ -200,7 +204,7 @@ export default function HomePage() {
           position="fixed"
           bottom="4"
           right="4"
-          onClick={navigate("/requestMeeting")} // Open the modal when clicked
+          onClick={() => navigate("/requestMeeting")} // Open the modal when clicked
         />
       </Box>
     </div>

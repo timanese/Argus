@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  Marker,
+  Polyline,
+} from "@react-google-maps/api";
 import { Button } from "@chakra-ui/react";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 const AcceptMeetingPage = () => {
@@ -58,6 +63,13 @@ const AcceptMeetingPage = () => {
     // Add decline API call here if needed
     navigate("/"); // Navigate back to home
   };
+  const path = [
+    { lat: 40.73061, lng: -73.935242 }, // New York City
+    { lat: 34.052235, lng: -118.243683 }, // Los Angeles
+    { lat: 41.878113, lng: -87.629799 }, // Chicago
+    { lat: 29.760427, lng: -95.369804 }, // Houston
+    { lat: 33.448376, lng: -112.074036 }, // Phoenix
+  ];
 
   return (
     <div
@@ -99,6 +111,7 @@ const AcceptMeetingPage = () => {
                     : { lat: 40.7128, lng: -74.006 }
                 }
               />
+              <Polyline path={path} options={{ strokeColor: "#FF0000 " }} />
             </GoogleMap>
           )}
 

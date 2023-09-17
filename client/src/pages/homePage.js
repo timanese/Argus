@@ -6,7 +6,9 @@ import {
   StatLabel,
   StatNumber,
   useColorModeValue,
-  IconButton
+  IconButton,
+  Flex,
+  Button,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useAuth } from "../contexts/UserContext";
@@ -18,34 +20,52 @@ import SubmitModal from "./../components/SubmitModal"; // Import the SubmitModal
 import RequestMeetingPage from "./RequestMeetingPage";
 
 function StatsCard(props) {
-  // const { name, location } = props;
   const { meetingTitle, startTime, location, level, status } = props;
 
   return (
-    <Stat
+    <Flex
+      flexDirection="column"
+      justifyContent="space-between"
       px={{ base: 4, md: 8 }}
       py={"5"}
       shadow={"xl"}
       border={"1px solid"}
       borderColor={useColorModeValue("gray.800", "gray.500")}
       rounded={"lg"}
+      height="full"
     >
-      <StatLabel fontWeight={"medium"} isTruncated>
-        {meetingTitle}
-      </StatLabel>
-      <StatNumber fontSize={"2xl"} fontWeight={"medium"}>
-        {startTime}
-      </StatNumber>
-      <StatLabel fontWeight={"medium"} isTruncated>
-        {location}
-      </StatLabel>
-      <StatLabel fontWeight={"medium"} isTruncated>
-        {status}
-      </StatLabel>
-      <StatLabel fontSize={"xs"} fontWeight={"medium"} isTruncated>
-        {level}
-      </StatLabel>
-    </Stat>
+      <Stat>
+        <StatLabel fontWeight={"medium"} isTruncated>
+          {meetingTitle}
+        </StatLabel>
+        <StatNumber fontSize={"2xl"} fontWeight={"medium"}>
+          {startTime}
+        </StatNumber>
+        <StatLabel fontWeight={"medium"} isTruncated>
+          {location}
+        </StatLabel>
+        <StatLabel fontWeight={"medium"} isTruncated>
+          {status}
+        </StatLabel>
+        <StatLabel fontSize={"xs"} fontWeight={"medium"} isTruncated>
+          {level === "2" ? "Tier 2" : "Tier 1"}
+        </StatLabel>
+      </Stat>
+
+      <Flex justifyContent="flex-end">
+        {status === "Completed" ? (
+          <></>
+        ) : status === "Pending" ? (
+          <Button size="sm" mt={0} disabled>
+            Start
+          </Button>
+        ) : (
+          <Button size="sm" mt={0}>
+            Start
+          </Button>
+        )}
+      </Flex>
+    </Flex>
   );
 }
 
@@ -133,7 +153,8 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/api/meetings/${userId}/getAll`)
+    axios
+      .get(`http://localhost:3001/api/meetings/${userId}/getAll`)
       .then((res) => {
         setMeetings(res.data.meetings);
         console.log(res.data.meetings);
@@ -145,8 +166,12 @@ export default function HomePage() {
 
   useEffect(() => {
     // Filter meetings into 'current' and 'previous' based on their 'status'
-    const current = meetings.filter((meeting) => meeting.status !== "Completed");
-    const previous = meetings.filter((meeting) => meeting.status === "Completed");
+    const current = meetings.filter(
+      (meeting) => meeting.status !== "Completed"
+    );
+    const previous = meetings.filter(
+      (meeting) => meeting.status === "Completed"
+    );
 
     setCurrentMeetings(current);
     setPreviousMeetings(previous);
@@ -161,43 +186,49 @@ export default function HomePage() {
             <Tab>Current Meetings</Tab>
             <Tab>Previous Meetings</Tab>
           </TabList>
-      <TabPanels>
-        <TabPanel>
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 5, lg: 8 }}>
-            {currentMeetings.map((meeting, index) => (
-              <StatsCard
-                key={index}
-                meetingTitle={meeting.meetingTitle} // Replace with the actual field name
-                name={meeting.initiatedBy.name} // Replace with the actual field name
-                location={meeting.location}
-                startTime={meeting.startTime}
-                level={meeting.level}
-                status={meeting.status}
-              />
-            ))}
-          </SimpleGrid>
-        </TabPanel>
-        <TabPanel>
-           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 5, lg: 8 }}>
-            {previousMeetings.map((meeting, index) => (
-              <StatsCard
-                key={index}
-                meetingTitle={meeting.meetingTitle} // Replace with the actual field name
-                name={meeting.initiatedBy.name} // Replace with the actual field name
-                location={meeting.location}
-                startTime={meeting.startTime}
-                level={meeting.level}
-                status={meeting.status}
-              />
-            ))}
-          </SimpleGrid>
-         </TabPanel>
-        </TabPanels>
-         </Tabs>
-         <SubmitModal
-        title="Request a Meeting"
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+          <TabPanels>
+            <TabPanel>
+              <SimpleGrid
+                columns={{ base: 1, md: 3 }}
+                spacing={{ base: 5, lg: 8 }}
+              >
+                {currentMeetings.map((meeting, index) => (
+                  <StatsCard
+                    key={index}
+                    meetingTitle={meeting.meetingTitle} // Replace with the actual field name
+                    name={meeting.initiatedBy.name} // Replace with the actual field name
+                    location={meeting.location}
+                    startTime={meeting.startTime}
+                    level={meeting.level}
+                    status={meeting.status}
+                  />
+                ))}
+              </SimpleGrid>
+            </TabPanel>
+            <TabPanel>
+              <SimpleGrid
+                columns={{ base: 1, md: 3 }}
+                spacing={{ base: 5, lg: 8 }}
+              >
+                {previousMeetings.map((meeting, index) => (
+                  <StatsCard
+                    key={index}
+                    meetingTitle={meeting.meetingTitle} // Replace with the actual field name
+                    name={meeting.initiatedBy.name} // Replace with the actual field name
+                    location={meeting.location}
+                    startTime={meeting.startTime}
+                    level={meeting.level}
+                    status={meeting.status}
+                  />
+                ))}
+              </SimpleGrid>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+        <SubmitModal
+          title="Request a Meeting"
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
         />
         <IconButton
           icon={<AddIcon />}

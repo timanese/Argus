@@ -20,12 +20,13 @@ import SubmitModal from "./../components/SubmitModal"; // Import the SubmitModal
 import RequestMeetingPage from "./RequestMeetingPage";
 
 // Api call to initiate a meeting
-const initiateMeeting = (meetingId) => {
+const initiateMeeting = (meetingId, navigate) => {
   // console.log("Initiating meeting:", meetingId);
   axios
     .put(`http://localhost:3001/api/meetings/${meetingId}/initiate`)
     .then((res) => {
       console.log(res.data);
+      navigate(`/meeting/${meetingId}`);
     })
     .catch((err) => {
       console.error("Error initiating meeting:", err);
@@ -33,6 +34,7 @@ const initiateMeeting = (meetingId) => {
 };
 
 function StatsCard(props) {
+  const navigate = useNavigate();
   const { key, meeting, meetingTitle, startTime, location, level, status } =
     props;
 
@@ -70,7 +72,11 @@ function StatsCard(props) {
         {status !== "Scheduled" ? (
           <></>
         ) : (
-          <Button size="sm" mt={0} onClick={() => initiateMeeting(meeting._id)}>
+          <Button
+            size="sm"
+            mt={0}
+            onClick={() => initiateMeeting(meeting._id, navigate)}
+          >
             Start
           </Button>
         )}

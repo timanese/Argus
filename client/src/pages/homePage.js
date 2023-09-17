@@ -7,6 +7,7 @@ import {
   StatNumber,
   useColorModeValue,
   IconButton,
+  Text,
   Flex,
   Button,
 } from "@chakra-ui/react";
@@ -222,6 +223,9 @@ export default function HomePage() {
                     status={meeting.status}
                   />
                 ))}
+                {currentMeetings && currentMeetings.length == 0 && (
+                  <Text>No upcoming meetings.</Text>
+                )}
               </SimpleGrid>
             </TabPanel>
             <TabPanel>
@@ -240,6 +244,9 @@ export default function HomePage() {
                     status={meeting.status}
                   />
                 ))}
+                {previousMeetings && previousMeetings.length == 0 && (
+                  <Text>No previous meetings.</Text>
+                )}
               </SimpleGrid>
             </TabPanel>
           </TabPanels>

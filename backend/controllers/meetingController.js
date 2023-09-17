@@ -219,7 +219,7 @@ exports.initiate = async (req, res) => {
 
     // const shareableId = crypto.randomBytes(16).toString("hex");
     // const shareableLink = `http://localhost:3000/emergency/${shareableId}`;
-    const shareableLink = `http://localhost:3000/meeting/${id}`;
+    const shareableLink = `http://localhost:3000/buddy/${id}`;
 
     // Store the shareableId in the meeting model (You may want to do this)
     // meeting.uniqueId = shareableId;

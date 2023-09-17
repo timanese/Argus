@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
     profilePictureId,
     driversLicenseFrontId,
     driversLicenseBackId,
-    optedInToNotifcations
+    optedInToNotifcations,
   } = req.body;
 
   try {
@@ -37,7 +37,7 @@ exports.register = async (req, res) => {
       profilePictureId,
       driversLicenseFrontId,
       driversLicenseBackId,
-      optedInToNotifcations
+      optedInToNotifcations,
     });
 
     if (!password) {
@@ -80,7 +80,7 @@ exports.login = async (req, res) => {
     rest.password = "";
     rest._id = user._doc._id;
     rest.id = user._doc._id;
-    res.json({user: rest});
+    res.json({ user: rest });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -106,15 +106,45 @@ exports.createEmergencyContact = async (req, res) => {
     const userId = req.params.id;
     const { firstName, lastName, phoneNumber } = req.body;
     const newContact = { firstName, lastName, phoneNumber };
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    user.emergencyContacts.push(newContact);
+    // Create a new user for the emergency contact
+    let newEmergencyUser = await User.findOne({ phoneNumber });
+
+    if (!newEmergencyUser) {
+      // Generate a random password (you could also send this to the user)
+      const password = Math.random().toString(36).slice(-8);
+
+      // Hash the password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      // Create the new user
+      newEmergencyUser = new User({
+        firstName,
+        lastName,
+        phoneNumber,
+        password: hashedPassword,
+        email: Math.random().toString(36).slice(-8),
+        // Add other default fields if needed
+      });
+
+      await newEmergencyUser.save();
+    }
+
+    // Add the new contact to the existing user's emergency contacts
+    user.emergencyContacts.push(newEmergencyUser);
     await user.save();
 
-    res.json(newContact);
+    res.json({
+      newContact,
+      newEmergencyUser,
+      msg: "Emergency contact and new user created successfully",
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

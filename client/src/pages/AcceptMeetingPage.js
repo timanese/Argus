@@ -2,24 +2,117 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
-import { Button } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Radio,
+  RadioGroup,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { getUser, useAuth } from "../contexts/UserContext";
+import CreateContactModal from "../components/CreateContactModal";
+import { getGeocode, getLatLng } from "use-places-autocomplete";
+
+const SelectEmergencyContact = ({
+  selectedContact,
+  setSelectedContact,
+  emergencyContacts,
+  setEmergencyContacts,
+  userId,
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const createNewContact = (newContact) => {
+    axios
+      .put(
+        `http://localhost:3001/api/users/${userId}/emergencyContact`,
+        newContact
+      )
+      .then((res) => {
+        setEmergencyContacts((prevContacts) => [...prevContacts, res.data]);
+      })
+      .catch((err) => {
+        console.error("Error creating new emergency contact:", err);
+      });
+  };
+
+  return (
+    <>
+      <Heading w="100%" textAlign={"center"} fontWeight="normal">
+        Select an Emergency Contact
+      </Heading>
+      <Button mt={4} onClick={onOpen}>
+        Create New Emergency Contact
+      </Button>
+      <Box mt={4}>
+        <RadioGroup onChange={setSelectedContact} value={selectedContact}>
+          <VStack align="start" spacing={4}>
+            {emergencyContacts.map((contact, index) => {
+              if (!contact || !contact._id) {
+                console.error("Invalid contact:", contact);
+                return null; // Skip this iteration
+              }
+              return (
+                <Box key={index} p={4} borderWidth={1} borderRadius="md">
+                  <Radio value={contact._id.toString()}>
+                    <Text fontWeight="bold">{`${contact.firstName} ${contact.lastName}`}</Text>
+                    <Text fontSize="sm">{`Phone: ${contact.phoneNumber}`}</Text>
+                  </Radio>
+                </Box>
+              );
+            })}
+          </VStack>
+        </RadioGroup>
+      </Box>
+
+      <CreateContactModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={createNewContact}
+      />
+    </>
+  );
+};
 
 const AcceptMeetingPage = () => {
   const { id } = useParams();
-  console.log(id);
   const [meeting, setMeeting] = useState(null);
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
   const navigate = useNavigate();
-
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [emergencyContacts, setEmergencyContacts] = useState([]);
+  const user = getUser();
+  if (!user) {
+    navigate("/");
+  }
+  const [address, setAddress] = useState({});
+  const handleAddress = async (address) => {
+    const results = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(results[0]);
+    setAddress({ lat, lng });
+  };
   useEffect(() => {
+    axios
+      .get(`http://localhost:3001/api/users/${user._id}/emergencyContacts`)
+      .then((res) => {
+        setEmergencyContacts(res.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching emergency contacts:", err);
+      });
     axios
       .get(
         `http://localhost:3001/api/meetings/${id ?? "65061a1021811cb7732c20e2"}`
       )
       .then((response) => {
+        console.log(response.data);
         setMeeting(response.data ?? {});
+        handleAddress(response?.data?.location);
       })
       .catch((error) => {
         console.error("Error fetching meeting:", error);
@@ -27,11 +120,13 @@ const AcceptMeetingPage = () => {
   }, [id]);
 
   const handleAccept = () => {
+    console.log(user._id, selectedContact);
     axios
       .put(
         `http://localhost:3001/api/meetings/${id}/accept`,
         {
-          acceptedBy: "someUserId", // Replace with actual user ID
+          acceptedBy: user._id,
+          acceptedByEmergencyContact: selectedContact,
         },
         {
           headers: {
@@ -70,7 +165,6 @@ const AcceptMeetingPage = () => {
           <p style={{ fontSize: "24px", margin: "20px" }}>
             Time: {new Date(meeting.startTime).toLocaleString()}
           </p>
-
           {isLoaded && (
             <GoogleMap
               mapContainerStyle={{
@@ -79,24 +173,28 @@ const AcceptMeetingPage = () => {
                 margin: "20px",
               }}
               center={
-                meeting.location ?? {
-                  lat: 40.7128,
-                  lng: -74.006,
-                }
+                address.lat && address.lng
+                  ? address
+                  : { lat: 40.7128, lng: -74.006 }
               }
               zoom={15}
             >
               <Marker
                 position={
-                  meeting.location ?? {
-                    lat: 40.7128,
-                    lng: -74.006,
-                  }
+                  address.lat && address.lng
+                    ? address
+                    : { lat: 40.7128, lng: -74.006 }
                 }
               />
             </GoogleMap>
           )}
-
+          <SelectEmergencyContact
+            selectedContact={selectedContact}
+            setSelectedContact={setSelectedContact}
+            emergencyContacts={emergencyContacts}
+            setEmergencyContacts={setEmergencyContacts}
+            userId={user._id}
+          />
           <div
             style={{
               display: "flex",

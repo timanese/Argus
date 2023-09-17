@@ -85,7 +85,7 @@ export default function RequestMeetingPage() {
   useEffect(() => {
     // Fetch all emergency contacts for a user
     axios
-      .get(bp.buildPath(`/api/users/${userId}/emergencyContacts`))
+      .get(bp.buildPath(`/api/users/${userId}/getAllEmergencyContacts`))
       .then((res) => {
         setEmergencyContacts(res.data);
       })

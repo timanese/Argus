@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const Meeting = require("../models/Meeting");
 const User = require("../models/User");
-const twilioClient = require("./../config/twilio");
+const twilioClient = require("../config/twilio");
 
 // General-purpose function to upload GPS data
 const uploadGPSData = async (meetingId, gpsLog) => {
@@ -262,5 +262,18 @@ exports.complete = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
+  }
+};
+
+// Get a single meeting by ID
+exports.getMeetingById = async (req, res) => {
+  try {
+    const meeting = await Meeting.findById(req.params.id);
+    if (!meeting) {
+      return res.status(404).json({ message: "Meeting not found" });
+    }
+    res.status(200).json(meeting);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 };

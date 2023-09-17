@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const http = require("http");
+const path = require("path");
 require("dotenv").config();
 
 // Initialize Express app
@@ -46,6 +47,19 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Server static assets if in production
+if (process.env.MODE === "production") {
+  console.log("Started in production mode.");
+  let path_ = path.join(__dirname, "../", "client", "build");
+  console.log("Looking for build path at", path_);
+  app.use(express.static(path_));
+  app.get("/*", function (req, res) {
+    res.sendFile(
+      path.join(__dirname, "../", "client", "build", "index.html")
+    );
+  });
+}
 
 // Export the server instance so you can use it elsewhere
 module.exports = server;

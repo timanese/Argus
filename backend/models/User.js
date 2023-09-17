@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phoneNumber: { type: String, required: true, unique: true },
+  location: { type: String, required: true },
   profilePicture: { type: mongoose.Schema.Types.ObjectId, ref: "fs.files" },
   driversLicenseFront: {
     type: mongoose.Schema.Types.ObjectId,

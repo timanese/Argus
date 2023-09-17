@@ -91,7 +91,7 @@ exports.getAllMeetings = async (req, res) => {
 };
 
 exports.request = async (req, res) => {
-  const { level, initiatedBy, location, startTime } = req.body;
+  const { meetingTitle, level, initiatedBy, initiatedByEmergencyContact, location, startTime } = req.body;
 
   try {
     // Generate a unique identifier for the shareable URL
@@ -100,8 +100,10 @@ exports.request = async (req, res) => {
     // Create a new meeting instance
     const meeting = new Meeting({
       uniqueId,
+      meetingTitle,
       level,
       initiatedBy,
+      initiatedByEmergencyContact,
       location,
       startTime,
       status: "pending", // Default status is set to 'pending'
@@ -126,7 +128,7 @@ exports.request = async (req, res) => {
 
 exports.accept = async (req, res) => {
   const { id } = req.params;
-  const { acceptedBy } = req.body;
+  const { acceptedBy, acceptedByEmergencyContact } = req.body;
 
   try {
     // Find the meeting by its ID
@@ -146,6 +148,7 @@ exports.accept = async (req, res) => {
 
     // Update the meeting
     meeting.acceptedBy = acceptedBy;
+    meeting.acceptedByEmergencyContact = acceptedByEmergencyContact;
     meeting.status = "ongoing";
 
     // Save the updated meeting
@@ -163,8 +166,10 @@ exports.initiate = async (req, res) => {
 
   try {
     const meeting = await Meeting.findById(id)
-      .populate("initiatedBy", "emergencyContacts")
-      .populate("acceptedBy", "emergencyContacts");
+      .populate("initiatedBy")
+      .populate("initiatedByEmergencyContact")
+      .populate("acceptedBy")
+      .populate("acceptedByEmergencyContact");
 
     if (!meeting) return res.status(404).json({ msg: "Meeting not found" });
 
@@ -175,17 +180,17 @@ exports.initiate = async (req, res) => {
     meeting.uniqueId = shareableId;
     await meeting.save();
 
-    const initiatorContacts = meeting.initiatedBy.emergencyContacts;
-    const acceptorContacts = meeting.acceptedBy.emergencyContacts;
-    const allContacts = [...initiatorContacts, ...acceptorContacts];
-    console.log(allContacts);
+    const allContacts = [meeting.initiatedByEmergencyContact, meeting.acceptedByEmergencyContact];
+    const allUsers = [meeting.initiatedBy, meeting.acceptedBy];
 
     // Send SMS
-    for (const contact of allContacts) {
+    for (let i = 0; i < allContacts.length; i++) {
       await twilioClient.messages.create({
-        body: `Emergency Alert: You can view the audio and GPS logs for this meeting here: ${shareableLink}`,
-        to: contact.phoneNumber,
-        from: "+15005550006",
+        body: `Hello ${allContacts[i].username}, this is an Argus request from your friend ${allUsers[i].username}. If you believe this message is in error, please reply STOP to unsubscribe.\
+        \n${allUsers[i].username} is scheduled to meet at ${meeting.location} at ${meeting.startTime}. Please click on \
+        \nthe link below to follow their meetup and keep an eye on their safety.\n${shareableLink}`,
+        to: allContacts[i].phoneNumber,
+        from: "+18335181680",
       });
     }
 

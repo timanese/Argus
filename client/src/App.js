@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import ErrorPage from "./pages/Error";
 
 const LOGIN_ROUTE = "/login";
 
@@ -16,6 +17,7 @@ function RequireAuth({ children }) {
   let auth = useAuth();
   if (!auth.email) {
     console.log("Not logged in, redirecting.");
+    // uncomment if needed
     return <Navigate to={LOGIN_ROUTE} />;
   }
 
@@ -46,6 +48,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path={LOGIN_ROUTE} element={<LoginPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>

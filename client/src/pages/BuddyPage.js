@@ -15,7 +15,7 @@ import {
 import {
   GoogleMap,
   InfoWindow,
-  Marker,
+  MarkerF,
   useJsApiLoader,
   Polyline,
 } from "@react-google-maps/api";
@@ -24,6 +24,7 @@ import { useLocation, useParams } from "react-router-dom";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css"; // Styles
 import io from "socket.io-client";
+import NavBar from "../components/NavBar";
 
 const containerStyle = {
   width: "100%",
@@ -45,7 +46,7 @@ const BuddyPage = () => {
   const [buddyAudio, setBuddyAudio] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [audioLogs, setAudioLogs] = useState([{}]);
-  // const 
+  // const
   const [buddyLocation, setBuddyLocation] = useState({
     lat: 40.7128,
     lng: -74.006,
@@ -150,6 +151,7 @@ const BuddyPage = () => {
 
   return (
     <div>
+      <NavBar />
       {/* Map with buddy location */}
       <div id="buddyMap">
         {isLoaded && (
@@ -160,7 +162,7 @@ const BuddyPage = () => {
           >
             <Polyline path={gpsLogs} options={{ strokeColor: "#FF0000 " }} />
 
-            <Marker position={buddyLocation} />
+            <MarkerF position={buddyLocation} />
           </GoogleMap>
         )}
       </div>

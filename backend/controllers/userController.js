@@ -100,7 +100,6 @@ exports.createEmergencyContact = async (req, res) => {
     const userId = req.params.id;
     const { firstName, lastName, phoneNumber } = req.body;
     const newContact = { firstName, lastName, phoneNumber };
-
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ msg: "User not found" });

@@ -22,6 +22,7 @@ const MeetingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  phoneNumber: { type: String, required: true },
   location: { type: String, required: true },
   startTime: { type: Date, required: true },
   endTime: { type: Date },

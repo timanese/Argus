@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const Meeting = require("../models/Meeting");
 const User = require("../models/User");
-const twilioClient = require("../__tests__/config/twilio");
+const twilioClient = require("./../config/twilio");
 
 // General-purpose function to upload GPS data
 const uploadGPSData = async (meetingId, gpsLog) => {
@@ -72,7 +72,7 @@ exports.uploadAudio = async (req, res) => {
 exports.getAllMeetings = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
+
     const meetings = await Meeting.find({
       $or: [{ initiatedBy: id }, { acceptedBy: id }],
     })
@@ -111,11 +111,13 @@ exports.request = async (req, res) => {
       level,
       initiatedBy,
       initiatedByEmergencyContact,
+      phoneNumber,
       location,
       startTime,
-      status: "pending", // Default status is set to 'pending'
+      status: "Pending", // Default status is set to 'pending'
     });
 
+    console.log("Requesting meeting...");
     // Save the meeting in the database
     await meeting.save();
 

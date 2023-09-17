@@ -18,7 +18,7 @@ import {
   useJsApiLoader,
 } from "@react-google-maps/api";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css"; // Styles
 
@@ -33,6 +33,9 @@ const center = {
 };
 
 const BuddyPage = () => {
+  const { id } = useParams();
+  console.log(id);
+  const meetingId = id;
   const [selectedAudio, setSelectedAudio] = useState(null);
   const [gpsLogs, setGpsLogs] = useState([]);
   const [audioLogs, setAudioLogs] = useState([]);
@@ -49,10 +52,6 @@ const BuddyPage = () => {
   const toast = useToast();
   const [meeting, setMeeting] = useState(null);
   const location = useLocation();
-
-  // Extract the meeting ID from the query parameters
-  const searchParams = new URLSearchParams(location.search);
-  const meetingId = searchParams.get("meetingId");
 
   useEffect(() => {
     // Fetch the meeting by its ID

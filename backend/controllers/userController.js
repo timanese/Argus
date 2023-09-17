@@ -16,6 +16,7 @@ exports.register = async (req, res) => {
     profilePictureId,
     driversLicenseFrontId,
     driversLicenseBackId,
+    optedInToNotifcations
   } = req.body;
 
   try {
@@ -36,6 +37,7 @@ exports.register = async (req, res) => {
       profilePictureId,
       driversLicenseFrontId,
       driversLicenseBackId,
+      optedInToNotifcations
     });
 
     if (!password) {

@@ -92,6 +92,7 @@ exports.getAllMeetings = async (req, res) => {
 
 exports.request = async (req, res) => {
   const {
+    phoneNumber,
     meetingTitle,
     level,
     initiatedBy,
@@ -121,10 +122,19 @@ exports.request = async (req, res) => {
     // Save the meeting in the database
     await meeting.save();
 
-    // Create the shareable URL
-    const shareableUrl = `http://localhost:3001/api/meetings/share/${uniqueId}`;
+    // Create the shareable URL with meeting id as a query parameter
+    const shareableUrl = `http://localhost:3000/acceptMeeting/${meeting._id}`;
 
-    // Ideally, you would associate this uniqueId with the meeting record in the database for later retrieval.
+    // Send the shareable URL via Twilio to the initiator's emergency contact
+    const message = `You have a new meeting request. Click the link to view details: ${shareableUrl}. If you believe this message is in error, please reply STOP to unsubscribe.`;
+
+    await twilioClient.messages.create({
+      body: message,
+      to: phoneNumber, // Replace with the actual phone number
+      from: "+18335181680", // Replace with your Twilio phone number
+    });
+
+    // Respond with the meeting data and shareable URL
     res
       .status(201)
       .json({ msg: "Meeting requested successfully", meeting, shareableUrl });
@@ -140,8 +150,7 @@ exports.accept = async (req, res) => {
 
   try {
     // Find the meeting by its ID
-    const meeting = await Meeting.findById(id)
-    .populate("initiatedBy");
+    const meeting = await Meeting.findById(id).populate("initiatedBy");
 
     // Check if the meeting exists
     if (!meeting) {
@@ -162,20 +171,20 @@ exports.accept = async (req, res) => {
 
     // Message to be sent to the initiator of the meeting
     const initiatorMessage = `Your meeting request has been accepted by ${acceptedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
-      
+
     await twilioClient.messages.create({
-        body: initiatorMessage,
-        to: meeting.initiatedBy.phoneNumber,
-        from: "+18335181680",
-      });
+      body: initiatorMessage,
+      to: meeting.initiatedBy.phoneNumber ?? "+19542408181",
+      from: "+18335181680",
+    });
 
     const acceptedByEmergencyContactMessage = `Hello ${acceptedByEmergencyContact.firstName}, this message is to notify you that your friend ${acceptedBy.firstName} has accepted a meeting request from ${meeting.initiatedBy.firstName}. If you believe this message is in error, please reply STOP to unsubscribe.`;
 
     await twilioClient.messages.create({
-        body: acceptedByEmergencyContactMessage,
-        to: acceptedByEmergencyContact.phoneNumber,
-        from: "+18335181680",
-      });
+      body: acceptedByEmergencyContactMessage,
+      to: acceptedByEmergencyContact.phoneNumber,
+      from: "+18335181680",
+    });
 
     // Save the updated meeting
     await meeting.save();

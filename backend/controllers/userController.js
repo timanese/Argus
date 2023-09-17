@@ -50,7 +50,9 @@ exports.register = async (req, res) => {
     await user.save();
 
     let { pass, ...rest } = user._doc;
-
+    rest.password = "";
+    rest._id = user._doc._id;
+    rest.id = user._doc._id;
     res.json(rest);
   } catch (err) {
     console.error(err);
@@ -73,7 +75,9 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
     const { pass, ...rest } = user._doc;
-
+    rest.password = "";
+    rest._id = user._doc._id;
+    rest.id = user._doc._id;
     res.json({user: rest});
   } catch (err) {
     console.error(err);

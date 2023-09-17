@@ -6,6 +6,7 @@ import { Button } from "@chakra-ui/react";
 
 const AcceptMeetingPage = () => {
   const { id } = useParams();
+  console.log(id);
   const [meeting, setMeeting] = useState(null);
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
@@ -13,7 +14,6 @@ const AcceptMeetingPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch meeting by ID
     axios
       .get(
         `http://localhost:3001/api/meetings/${id ?? "65061a1021811cb7732c20e2"}`
@@ -65,10 +65,10 @@ const AcceptMeetingPage = () => {
       {meeting && (
         <>
           <h1 style={{ fontSize: "36px", margin: "20px" }}>
-            {meeting.requesterName}'s Meeting
+            Meeting with {meeting.requesterName}
           </h1>
           <p style={{ fontSize: "24px", margin: "20px" }}>
-            Time: {new Date(meeting.time).toLocaleString()}
+            Time: {new Date(meeting.startTime).toLocaleString()}
           </p>
 
           {isLoaded && (
